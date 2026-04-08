@@ -26,6 +26,19 @@ import polars as pl
 
 logger = logging.getLogger(__name__)
 
+
+def _make_trading_days(n: int, start: tuple[int, int, int] = (2015, 1, 2)) -> pl.Series:
+    """Generate n weekday (Mon–Fri) dates starting from `start`.
+
+    Polars 1.x dropped 'bd' interval support; we filter calendar days by weekday.
+    """
+    # Generate 2× as many calendar days as we need to guarantee enough weekdays
+    end_date = pl.date(start[0] + (n // 200) + 3, 1, 1)
+    all_days = pl.date_range(pl.date(*start), end_date, interval="1d", eager=True)
+    weekdays = all_days.filter(all_days.dt.weekday().is_in([0, 1, 2, 3, 4]))
+    return weekdays.head(n)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Schema constants
 # ─────────────────────────────────────────────────────────────────────────────
@@ -101,12 +114,7 @@ def generate_synthetic_data(
     rng = np.random.default_rng(seed)
     n_currencies = min(n_currencies, len(G10_FX_SYMBOLS))
 
-    dates = pl.date_range(
-        start=pl.date(2015, 1, 2),
-        end=None,
-        interval="1bd",
-        eager=True,
-    ).head(n_days).alias("date")
+    dates = _make_trading_days(n_days)
 
     # ── FX Returns: correlated GBM with GARCH-like vol clustering ────────────
     # Cross-correlation matrix: G10 FX tends to cluster (commodity vs safe-haven)
@@ -138,9 +146,10 @@ def generate_synthetic_data(
         nominal_rates[t] = (0.995 * nominal_rates[t - 1]
                            + 0.005 * rate_means
                            + rng.normal(0, 0.0003, n_currencies))
-    # BOJ hiking trend in last 500 days (2025-2026 regime)
-    hike_trend = np.linspace(0, 0.003, 500)
-    nominal_rates[-500:, 1] += hike_trend  # JPY rate rising
+    # BOJ hiking trend in last min(500, n_days//2) days (2025-2026 regime)
+    hike_window = min(500, n_days // 2)
+    hike_trend = np.linspace(0, 0.003, hike_window)
+    nominal_rates[-hike_window:, 1] += hike_trend  # JPY rate rising
 
     # ── Breakevens: CPI-linked, slightly below nominal ─────────────────────
     breakeven_means = np.array([0.025, 0.005, 0.020, 0.030, 0.028,
@@ -181,7 +190,9 @@ def generate_synthetic_data(
     vix = np.abs(vix).clip(10, 80)
     # Simulate vol spikes (black swan events)
     for spike_day in rng.choice(n_days, size=15, replace=False):
-        vix[spike_day: spike_day + 5] *= np.linspace(2.5, 1.0, 5)
+        end_idx = min(spike_day + 5, n_days)
+        length = end_idx - spike_day
+        vix[spike_day:end_idx] *= np.linspace(2.5, 1.0, length)
     iv_atm = vix / 100
     rv_21d = 0.8 * iv_atm + rng.normal(0, 0.02, n_days)
     rv_21d = np.abs(rv_21d).clip(0.05, 0.80)
@@ -197,8 +208,9 @@ def generate_synthetic_data(
     # ── Equity (MAERM) ────────────────────────────────────────────────────
     equity_returns = rng.normal(0, 0.010, (n_days, 4))
     eps_revisions = rng.normal(0.02, 0.15, (n_days, 4))  # slight upward bias
-    # AI mega-cap (NQ index) gets larger upward revisions in 2025+
-    eps_revisions[-500:, 1] += 0.05
+    # AI mega-cap (NQ) upward revision trend in last portion
+    ai_window = min(500, n_days // 2)
+    eps_revisions[-ai_window:, 1] += 0.05
     ism_pmi = 52 + 4 * np.sin(2 * np.pi * np.arange(n_days) / 252) + rng.normal(0, 2, n_days)
 
     # ── Cross-asset (FDSP) ─────────────────────────────────────────────────
@@ -215,9 +227,7 @@ def generate_synthetic_data(
             {name: arr[:, i].tolist() for i, name in enumerate(names)}
         ).with_columns(dates.alias("date")).select(["date"] + names)
 
-    dates_series = pl.Series("date", pl.date_range(
-        start=pl.date(2015, 1, 2), end=None, interval="1bd", eager=True
-    ).head(n_days))
+    dates_series = _make_trading_days(n_days)
 
     def _col_names(symbols: tuple[str, ...], n: int) -> list[str]:
         return list(symbols[:n])
@@ -342,7 +352,7 @@ def extract_numpy_panels(
     fx_names = list(G10_FX_SYMBOLS[:n])
 
     def _to_f64(df: pl.DataFrame, cols: list[str]) -> np.ndarray:
-        return df.select(cols).to_numpy().astype(np.float64, copy=False)
+        return np.ascontiguousarray(df.select(cols).to_numpy(), dtype=np.float64)
 
     return {
         "fx_returns":     _to_f64(data["fx_returns"],     fx_names),

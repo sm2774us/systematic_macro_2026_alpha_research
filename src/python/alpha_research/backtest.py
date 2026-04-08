@@ -128,11 +128,9 @@ class BacktestOrchestrator:
         panels = extract_numpy_panels(raw_data, self.n_currencies)
         T = panels["fx_returns"].shape[0]
 
-        # Reconstruct date series
-        dates = pl.date_range(
-            start=pl.date(2015, 1, 2),
-            end=None, interval="1bd", eager=True,
-        ).head(T)
+        # Reconstruct date series (weekdays only — Polars 1.x dropped '1bd')
+        from alpha_research.data import _make_trading_days
+        dates = _make_trading_days(T)
 
         # ── 2. Signal computation ─────────────────────────────────────────────
         self._bundles = compute_master_signal(panels, dates)
@@ -205,10 +203,8 @@ class BacktestOrchestrator:
 
     @staticmethod
     def _print_kpi_table(report: pl.DataFrame) -> None:
-        """Log the full KPI report to console."""
-        logger.info("\n📊 Full KPI Report:")
-        logger.info(report.to_pandas().to_string() if hasattr(report, 'to_pandas')
-                    else str(report))
+        """Log the full KPI report to console (pure Polars, no pyarrow needed)."""
+        logger.info("\n📊 Full KPI Report:\n%s", report)
 
 
 def _cli_entry() -> None:

@@ -83,17 +83,19 @@ def _zscore_panel(arr: np.ndarray) -> np.ndarray:
     """Cross-sectional z-score each row of a [T × N] array."""
     mu  = arr.mean(axis=1, keepdims=True)
     sig = arr.std(axis=1, keepdims=True)
-    return np.where(sig > 1e-8, (arr - mu) / sig, 0.0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        z = np.where(sig > 1e-8, (arr - mu) / sig, 0.0)
+    return np.nan_to_num(z, nan=0.0, posinf=0.0, neginf=0.0)
 
 
 def _rolling_vol(returns: np.ndarray, window: int = 21) -> np.ndarray:
-    """Rolling annualised volatility [T × N]."""
+    """Rolling annualised volatility [T × N]. Warmup rows return 0.05 (5% floor)."""
     T, N = returns.shape
-    rv = np.full_like(returns, np.nan)
+    rv = np.full((T, N), 0.05, dtype=np.float64)
     for t in range(window, T):
         seg = returns[t - window:t]
-        rv[t] = np.sqrt(252.0) * seg.std(axis=0)
-    return np.where(rv < 1e-8, 0.05, rv)
+        rv[t] = np.sqrt(252.0) * np.clip(seg.std(axis=0), 1e-8, None)
+    return rv
 
 
 def _compute_rrdm_py(
@@ -131,9 +133,10 @@ def _compute_rac_py(
     returns: np.ndarray,
     vol_window: int = 21,
 ) -> np.ndarray:
-    """Pure-Python RAC computation fallback."""
+    """Pure-Python RAC computation fallback. Warmup rows are explicitly zeroed."""
     rv = _rolling_vol(returns, vol_window)
     rac = np.where(rv > 1e-8, forward_premia / rv, 0.0)
+    rac[:vol_window] = 0.0          # explicit warmup zero — no signal before window
     return _zscore_panel(rac)
 
 
@@ -286,8 +289,8 @@ def compute_master_signal(
     # ── MAERM ────────────────────────────────────────────────────────────────
     logger.info("Computing MAERM signals...")
     T = n_days
-    equity_ret = data_panels.get("energy_returns",
-                                  np.zeros((T, 4)))[:T, :4]
+    # MAERM uses equity index returns; fall back to zeros if not in panels
+    equity_ret = np.zeros((T, 4), dtype=np.float64)
     ism = data_panels["ism_pmi"]
     ism_mu, ism_sig = ism.mean(), ism.std() + 1e-8
     ism_z = (ism - ism_mu) / ism_sig

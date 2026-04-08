@@ -64,9 +64,8 @@ def panels(synthetic_data):
 
 @pytest.fixture(scope="session")
 def dates():
-    return pl.date_range(
-        start=pl.date(2015, 1, 2), end=None, interval="1bd", eager=True
-    ).head(N_DAYS)
+    from alpha_research.data import _make_trading_days
+    return _make_trading_days(N_DAYS)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

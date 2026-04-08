@@ -81,9 +81,8 @@ def _run_monitor() -> int:
     n_days = int(_env("N_DAYS", "2520"))
     raw = generate_synthetic_data(n_days=n_days, seed=99)
     panels = extract_numpy_panels(raw)
-    dates = pl.date_range(
-        start=pl.date(2015, 1, 2), end=None, interval="1bd", eager=True
-    ).head(n_days)
+    from alpha_research.data import _make_trading_days
+    dates = _make_trading_days(n_days)
 
     bundles = compute_master_signal(panels, dates)
     webhook = _env("SLACK_WEBHOOK", "")

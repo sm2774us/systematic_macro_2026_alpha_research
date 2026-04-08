@@ -10,8 +10,11 @@
 # ── Startup flags ─────────────────────────────────────────────────────────────
 startup --output_user_root=/tmp/bazel_cache
 
-# ── Common flags for all builds ───────────────────────────────────────────────
-common --enable_bzlmod=false
+# ── Disable Bzlmod (use WORKSPACE, not MODULE.bazel) — Bazel 7.4.1 ────────────
+# Must be on build/test/run lines, NOT on 'common' (common --enable_bzlmod
+# is not a valid flag in Bazel 7.x and would cause parse failure).
+build --noenable_bzlmod
+test  --noenable_bzlmod
 
 # ── C++ configuration ─────────────────────────────────────────────────────────
 build --cxxopt=-std=c++26
