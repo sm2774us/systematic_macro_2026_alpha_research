@@ -40,14 +40,9 @@ jobs:
           key: bazel-cpp-${{ runner.os }}-${{ hashFiles('WORKSPACE', 'src/cpp/BUILD.bazel') }}
           restore-keys: bazel-cpp-${{ runner.os }}-
 
-      - name: Install Bazel
-        run: |
-          curl -fsSL https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 \
-            -o ${{ github.workspace }}/bazel
-          chmod +x ${{ github.workspace }}/bazel
-          echo "${{ github.workspace }}" >> $GITHUB_PATH
-
       - name: Build C++ engines (Bazel gateway)
+        env:
+          USE_BAZEL_VERSION: 7.4.0  # Forces Bazelisk to use 7.4.0 instead of downloading 9.0.1
         run: bazel build --config=ci //src/cpp:alpha_cpp_lib //src/cpp:signal_demo
 
       - name: Run C++ unit tests (Bazel gateway)
