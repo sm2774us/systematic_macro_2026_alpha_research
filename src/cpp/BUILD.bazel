@@ -1,5 +1,7 @@
 """src/cpp/BUILD.bazel — C++26 signal engine library and nanobind extension."""
 
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
 _COPTS = ["-std=c++26","-O3","-march=native","-mavx2","-mfma","-ffast-math","-Wall","-Wextra"]
 
 cc_library(
