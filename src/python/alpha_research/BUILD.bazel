@@ -1,0 +1,10 @@
+"""src/python/alpha_research/BUILD.bazel — Python 3.13 alpha_research package."""
+
+load("@rules_python//python:defs.bzl", "py_library")
+
+py_library(
+    name = "alpha_research",
+    srcs = glob(["*.py"]),
+    imports = ["../../.."],   # repo root → allows `import alpha_research`
+    visibility = ["//visibility:public"],
+)

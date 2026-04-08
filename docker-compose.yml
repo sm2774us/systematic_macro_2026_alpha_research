@@ -1,0 +1,47 @@
+services:
+  # ── JupyterLab research environment ────────────────────────────────────────
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: alpha-research-2026:latest
+    container_name: alpha_research_jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/app/notebooks
+      - ./data:/app/data
+      - ./src:/app/src:ro
+    environment:
+      - LOG_LEVEL=INFO
+      - N_DAYS=2520
+      - N_CURRENCIES=8
+      - SLACK_WEBHOOK=${SLACK_WEBHOOK:-}
+    restart: unless-stopped
+
+  # ── Backtest runner (one-shot) ──────────────────────────────────────────────
+  backtest:
+    image: alpha-research-2026:latest
+    container_name: alpha_research_backtest
+    volumes:
+      - ./data:/app/data:ro
+      - ./results:/app/results
+    environment:
+      - LOG_LEVEL=INFO
+      - N_DAYS=2520
+      - SLACK_WEBHOOK=${SLACK_WEBHOOK:-}
+    command: ["python", "scripts/runner.py", "backtest"]
+    profiles: ["backtest"]
+
+  # ── Signal decay monitor (scheduled) ───────────────────────────────────────
+  monitor:
+    image: alpha-research-2026:latest
+    container_name: alpha_research_monitor
+    volumes:
+      - ./data:/app/data:ro
+    environment:
+      - LOG_LEVEL=WARNING
+      - SLACK_WEBHOOK=${SLACK_WEBHOOK:-}
+    command: ["python", "scripts/runner.py", "monitor"]
+    profiles: ["monitor"]

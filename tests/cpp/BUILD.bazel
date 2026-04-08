@@ -1,0 +1,12 @@
+"""tests/cpp/BUILD.bazel — C++26 Google Test suite."""
+
+cc_test(
+    name = "all_cpp_tests",
+    srcs = ["test_engines.cpp"],
+    copts = ["-std=c++26", "-O2"],
+    deps = [
+        "//src/cpp:alpha_cpp_lib",
+        "@googletest//:gtest_main",
+    ],
+    visibility = ["//visibility:public"],
+)

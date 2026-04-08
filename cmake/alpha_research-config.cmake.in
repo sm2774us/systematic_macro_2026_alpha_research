@@ -1,0 +1,4 @@
+# alpha_research-config.cmake — find_package(alpha_research) support
+include(CMakeFindDependencyMacro)
+find_dependency(Eigen3 3.4 REQUIRED)
+include("${CMAKE_CURRENT_LIST_DIR}/alpha_research-targets.cmake")

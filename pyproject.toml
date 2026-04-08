@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "alpha-research-2026"
+version = "1.0.0"
+description = "Institutional systematic macro alpha research pipeline — Q2-Q4 2026"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "Proprietary" }
+authors = [{ name = "Alpha Research Pod", email = "alpha@research.pod" }]
+
+dependencies = [
+    # Core data stack — NO pandas
+    "polars>=1.20.0",
+    "numpy>=2.1.0",
+    # Notebook / visualisation
+    "jupyterlab>=4.2.0",
+    "ipywidgets>=8.1.0",
+    "plotly>=5.24.0",
+    "kaleido>=0.2.1",          # plotly static export
+    # Signal / optimisation
+    "cvxpy>=1.6.0",             # QP portfolio optimisation
+    "scikit-learn>=1.6.0",      # HMM (hmmlearn), ridge cross-val helpers
+    "hmmlearn>=0.3.2",          # Hidden Markov Model (curve regime TPMCR)
+    "scipy>=1.14.0",            # stats utilities
+    # Data sourcing (production / research)
+    "requests>=2.32.0",
+    "httpx>=0.27.0",
+    # Monitoring / alerting
+    "rich>=13.9.0",             # pretty KPI tables in terminal
+    # Build bridge
+    "nanobind>=2.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-cov>=5.0.0",
+    "pytest-xdist>=3.6.0",     # parallel test execution
+    "ruff>=0.9.0",
+    "mypy>=1.11.0",
+]
+
+[project.scripts]
+alpha-backtest = "alpha_research.backtest:_cli_entry"
+alpha-monitor  = "scripts.runner:main"
+
+[tool.hatch.build.targets.wheel]
+# The installable package lives at src/python/alpha_research
+# After `pip install -e .` → `import alpha_research` works with no absolute paths
+packages = ["src/python/alpha_research"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "tests/",
+    "scripts/",
+    "notebooks/",
+    "CMakeLists.txt",
+    "README.md",
+]
+
+[tool.pytest.ini_options]
+testpaths  = ["tests/python"]
+addopts    = "-v --tb=short --strict-markers"
+markers    = [
+    "slow: mark test as slow (skipped in fast CI)",
+    "requires_cpp: requires alpha_cpp nanobind extension",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length    = 99
+select         = ["E", "F", "I", "UP", "B", "SIM"]
+ignore         = ["E501"]
+
+[tool.mypy]
+python_version     = "3.13"
+strict             = true
+ignore_missing_imports = true

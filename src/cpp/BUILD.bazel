@@ -1,0 +1,31 @@
+"""src/cpp/BUILD.bazel — C++26 signal engine library and nanobind extension."""
+
+_COPTS = ["-std=c++26","-O3","-march=native","-mavx2","-mfma","-ffast-math","-Wall","-Wextra"]
+
+cc_library(
+    name = "alpha_cpp_lib",
+    hdrs = ["math_utils.hpp","pdrrm_engine.hpp","strategies_engine.hpp","portfolio_optimizer.hpp"],
+    copts = _COPTS,
+    includes = ["."],
+    deps = ["@eigen//:eigen"],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "alpha_cpp.so",
+    srcs = ["bindings.cpp"],
+    copts = _COPTS + ["-fPIC","-DNANOBIND_MODULE_NAME=alpha_cpp"],
+    linkopts = ["-shared","-fPIC"],
+    linkshared = True,
+    linkstatic = False,
+    deps = [":alpha_cpp_lib","@nanobind//:nanobind"],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "signal_demo",
+    srcs = ["signal_demo.cpp"],
+    copts = _COPTS,
+    deps = [":alpha_cpp_lib"],
+    visibility = ["//visibility:public"],
+)

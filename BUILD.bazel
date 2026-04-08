@@ -1,0 +1,88 @@
+"""Root BUILD.bazel — alpha-research-2026 monorepo.
+
+All Bazel run targets are gated through scripts/runner.py which dispatches
+to the appropriate sub-action (backtest, notebook, docker_build, etc.).
+
+Targets:
+    //:backtest        — Run full signal backtest across all strategies
+    //:research        — Launch Jupyter research notebook
+    //:docker_build    — Build Docker image
+    //:docker_research — Launch notebook inside Docker
+    //:docker_down     — Tear down Docker compose stack
+    //:test_all        — Run all C++ and Python tests
+
+Author: Alpha Research Pod — 2026
+"""
+
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+# ── Backtest runner ──────────────────────────────────────────────────────────
+py_binary(
+    name = "backtest",
+    srcs = ["scripts/runner.py"],
+    args = ["backtest"],
+    main = "scripts/runner.py",
+    deps = [
+        "//src/python:alpha_research",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# ── Research notebook launcher ───────────────────────────────────────────────
+py_binary(
+    name = "research",
+    srcs = ["scripts/runner.py"],
+    args = ["jupyter"],
+    main = "scripts/runner.py",
+    deps = [
+        "//src/python:alpha_research",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# ── Signal monitor (decay detection + alerting) ──────────────────────────────
+py_binary(
+    name = "monitor",
+    srcs = ["scripts/runner.py"],
+    args = ["monitor"],
+    main = "scripts/runner.py",
+    deps = [
+        "//src/python:alpha_research",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# ── Docker targets ───────────────────────────────────────────────────────────
+py_binary(
+    name = "docker_build",
+    srcs = ["scripts/runner.py"],
+    args = ["docker_build"],
+    main = "scripts/runner.py",
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "docker_research",
+    srcs = ["scripts/runner.py"],
+    args = ["docker_jupyter"],
+    main = "scripts/runner.py",
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "docker_down",
+    srcs = ["scripts/runner.py"],
+    args = ["docker_down"],
+    main = "scripts/runner.py",
+    visibility = ["//visibility:public"],
+)
+
+# ── Aggregate test target ────────────────────────────────────────────────────
+# Run via: bazel test //:test_all
+test_suite(
+    name = "test_all",
+    tests = [
+        "//tests/cpp:all_cpp_tests",
+        "//tests/python:all_python_tests",
+    ],
+)

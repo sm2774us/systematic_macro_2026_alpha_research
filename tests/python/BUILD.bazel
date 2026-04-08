@@ -1,0 +1,12 @@
+"""tests/python/BUILD.bazel — Python pytest suite."""
+
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(
+    name = "all_python_tests",
+    srcs = ["test_pipeline.py"],
+    main = "test_pipeline.py",
+    deps = ["//src/python/alpha_research:alpha_research"],
+    args = ["-v", "--tb=short"],
+    visibility = ["//visibility:public"],
+)

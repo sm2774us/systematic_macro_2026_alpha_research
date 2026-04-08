@@ -1,0 +1,8 @@
+"""src/python/BUILD.bazel — forwards to the alpha_research package target."""
+# All library code lives under src/python/alpha_research/
+# This file allows //src/python:alpha_research as a convenient shorthand.
+alias(
+    name = "alpha_research",
+    actual = "//src/python/alpha_research:alpha_research",
+    visibility = ["//visibility:public"],
+)

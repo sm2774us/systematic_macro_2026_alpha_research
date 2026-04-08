@@ -1,0 +1,54 @@
+# =============================================================================
+# .bazelrc — Bazel build configuration for alpha-research-2026
+#
+# Common gateway for C++26 and Python 3.13 builds.
+# All CI, run.sh, and run.bat entry-points use Bazel exclusively.
+#
+# Author: Alpha Research Pod — 2026
+# =============================================================================
+
+# ── Startup flags ─────────────────────────────────────────────────────────────
+startup --output_user_root=/tmp/bazel_cache
+
+# ── Common flags for all builds ───────────────────────────────────────────────
+common --enable_bzlmod=false
+
+# ── C++ configuration ─────────────────────────────────────────────────────────
+build --cxxopt=-std=c++26
+build --cxxopt=-O3
+build --cxxopt=-march=native
+build --cxxopt=-Wall
+build --cxxopt=-Wextra
+build --cxxopt=-Wpedantic
+build --cxxopt=-ffast-math
+# SIMD: enable AVX2 / AVX-512 where available
+build --cxxopt=-mavx2
+build --cxxopt=-mfma
+build --host_cxxopt=-std=c++26
+build --host_cxxopt=-O2
+
+# ── Python configuration ──────────────────────────────────────────────────────
+build --python_version=PY3
+
+# ── Test flags ────────────────────────────────────────────────────────────────
+test --test_output=all
+test --test_verbose_timeout_warnings
+test --cxxopt=-std=c++26
+test --cxxopt=-O2
+
+# ── Sanitizer configs ─────────────────────────────────────────────────────────
+build:asan --cxxopt=-fsanitize=address
+build:asan --linkopt=-fsanitize=address
+build:asan --cxxopt=-fno-omit-frame-pointer
+
+build:tsan --cxxopt=-fsanitize=thread
+build:tsan --linkopt=-fsanitize=thread
+
+# ── Release config ────────────────────────────────────────────────────────────
+build:release --compilation_mode=opt
+build:release --cxxopt=-DNDEBUG
+build:release --strip=always
+
+# ── CI config ────────────────────────────────────────────────────────────────
+build:ci --color=no
+build:ci --show_progress_rate_limit=5
