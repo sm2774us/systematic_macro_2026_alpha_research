@@ -17,7 +17,6 @@ Author: Alpha Research Pod — 2026
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
 from typing import Any, NamedTuple
 
 import numpy as np
@@ -108,7 +107,7 @@ def _compute_rrdm_py(
     diff = real_rates - real_rates[:, [0]]  # vs USD (col 0)
     T, N = diff.shape
     rrdm = np.zeros_like(diff)
-    if T > window:
+    if window < T:
         rrdm[window:] = diff[window:] - diff[:-window]
     return _zscore_panel(rrdm)
 
@@ -248,7 +247,7 @@ def compute_master_signal(
     Returns:
         Dictionary mapping strategy name → SignalBundle, plus 'MASTER' bundle.
     """
-    from alpha_research.data import G10_FX_SYMBOLS, ENERGY_SYMBOLS, EQUITY_SYMBOLS, CROSS_ASSET_SYMBOLS
+    from alpha_research.data import CROSS_ASSET_SYMBOLS, ENERGY_SYMBOLS, G10_FX_SYMBOLS
 
     bundles: dict[str, SignalBundle] = {}
     fx_labels = list(G10_FX_SYMBOLS)[:data_panels["fx_returns"].shape[1]]
@@ -283,7 +282,7 @@ def compute_master_signal(
     tpmcr_pos = np.clip(tpmcr_sigs * 0.10 / (rv_rates + 1e-8), -0.30, 0.30)
     bundles["TPMCR"] = SignalBundle(
         signals=tpmcr_sigs, positions=tpmcr_pos,
-        dates=dates, labels=list(("ZN ZB RX G TN").split()),
+        dates=dates, labels=list(["ZN", "ZB", "RX", "G", "TN"]),
     )
 
     # ── MAERM ────────────────────────────────────────────────────────────────
@@ -301,7 +300,7 @@ def compute_master_signal(
     maerm_pos = np.clip(maerm_sigs * 0.10 / (maerm_rv + 1e-8), -0.25, 0.25)
     bundles["MAERM"] = SignalBundle(
         signals=maerm_sigs, positions=maerm_pos,
-        dates=dates, labels=list(("ES NQ RTY SX5E").split()),
+        dates=dates, labels=list(["ES", "NQ", "RTY", "SX5E"]),
     )
 
     # ── ISRC ─────────────────────────────────────────────────────────────────
@@ -456,7 +455,9 @@ class DecayMonitor:
 
     def _send_slack(self, message: str) -> None:
         """Post a Slack webhook notification (non-blocking best-effort)."""
-        import urllib.request, json  # noqa: E401
+        import json
+        import urllib.request
+
         try:
             req = urllib.request.Request(
                 self.webhook,

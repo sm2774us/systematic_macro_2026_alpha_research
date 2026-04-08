@@ -25,8 +25,12 @@ from typing import Any
 import numpy as np
 import polars as pl
 
-from alpha_research.data import MarketDataConfig, generate_synthetic_data, extract_numpy_panels
-from alpha_research.signals import compute_master_signal, MASTER_WEIGHTS, SignalBundle
+from alpha_research.data import (
+    MarketDataConfig,
+    extract_numpy_panels,
+    generate_synthetic_data,
+)
+from alpha_research.signals import SignalBundle, compute_master_signal
 
 logger = logging.getLogger(__name__)
 

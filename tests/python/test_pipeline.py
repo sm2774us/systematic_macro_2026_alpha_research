@@ -23,26 +23,22 @@ import pytest
 # Ensure package is importable without installation (editable mode / Bazel PYTHONPATH)
 sys.path.insert(0, str(Path(__file__).parents[2] / "src" / "python"))
 
+from alpha_research.backtest import BacktestOrchestrator
 from alpha_research.data import (
-    MarketDataConfig,
-    generate_synthetic_data,
-    extract_numpy_panels,
     G10_FX_SYMBOLS,
-    ENERGY_SYMBOLS,
-    CROSS_ASSET_SYMBOLS,
+    extract_numpy_panels,
+    generate_synthetic_data,
 )
 from alpha_research.signals import (
-    compute_pdrrm_signals,
-    compute_master_signal,
     DecayMonitor,
-    _zscore_panel,
-    _rolling_vol,
-    _compute_rrdm_py,
     _compute_pss_py,
     _compute_rac_py,
+    _compute_rrdm_py,
+    _rolling_vol,
+    _zscore_panel,
+    compute_master_signal,
+    compute_pdrrm_signals,
 )
-from alpha_research.backtest import BacktestOrchestrator
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Fixtures

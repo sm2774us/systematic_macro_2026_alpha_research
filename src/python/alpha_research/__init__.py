@@ -11,24 +11,24 @@ Six strategy signals implemented in C++26 with Python 3.13 research interface:
 Author: Alpha Research Pod — 2026
 """
 
+from alpha_research.backtest import BLACK_SWAN_WINDOWS, BacktestOrchestrator, StrategyKPIRow
 from alpha_research.data import (
-    MarketDataConfig,
-    generate_synthetic_data,
-    extract_numpy_panels,
-    G10_FX_SYMBOLS,
-    RATES_SYMBOLS,
+    CROSS_ASSET_SYMBOLS,
     ENERGY_SYMBOLS,
     EQUITY_SYMBOLS,
-    CROSS_ASSET_SYMBOLS,
+    G10_FX_SYMBOLS,
+    RATES_SYMBOLS,
+    MarketDataConfig,
+    extract_numpy_panels,
+    generate_synthetic_data,
 )
 from alpha_research.signals import (
-    compute_pdrrm_signals,
-    compute_master_signal,
-    DecayMonitor,
     MASTER_WEIGHTS,
+    DecayMonitor,
     SignalBundle,
+    compute_master_signal,
+    compute_pdrrm_signals,
 )
-from alpha_research.backtest import BacktestOrchestrator, StrategyKPIRow, BLACK_SWAN_WINDOWS
 
 __all__ = [
     "MarketDataConfig",

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(alpha_research_2026 VERSION 1.0.0 LANGUAGES CXX)
 
 # ── C++26 standard ─────────────────────────────────────────────────────────
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -60,7 +60,7 @@ target_include_directories(alpha_cpp_lib INTERFACE
   $<INSTALL_INTERFACE:include/alpha_research>
 )
 target_link_libraries(alpha_cpp_lib INTERFACE Eigen3::Eigen)
-target_compile_features(alpha_cpp_lib INTERFACE cxx_std_26)
+target_compile_features(alpha_cpp_lib INTERFACE cxx_std_23)
 target_compile_options(alpha_cpp_lib INTERFACE
   $<$<CONFIG:Release>:-O3;-march=native;-mavx2;-mfma;-ffast-math>
 )

@@ -54,7 +54,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build libeigen3-dev git
+            build-essential cmake ninja-build libeigen3-dev git g++-14
 
       - uses: actions/setup-python@v5
         with:
@@ -71,7 +71,9 @@ jobs:
           restore-keys: cmake-${{ runner.os }}-
 
       - name: CMake configure
-        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -G Ninja
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -G Ninja \
+            -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_C_COMPILER=gcc-14
 
       - name: CMake build
         run: cmake --build build --parallel

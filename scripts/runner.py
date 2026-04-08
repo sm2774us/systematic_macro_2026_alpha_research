@@ -74,14 +74,17 @@ def _run_backtest() -> int:
 
 def _run_monitor() -> int:
     """Run signal decay monitor over latest signals."""
-    from alpha_research.data import MarketDataConfig, generate_synthetic_data, extract_numpy_panels
-    from alpha_research.signals import compute_master_signal, DecayMonitor
-    import polars as pl
+    import numpy as np
+    from alpha_research.data import (
+        _make_trading_days,
+        extract_numpy_panels,
+        generate_synthetic_data,
+    )
+    from alpha_research.signals import DecayMonitor, compute_master_signal
 
     n_days = int(_env("N_DAYS", "2520"))
     raw = generate_synthetic_data(n_days=n_days, seed=99)
     panels = extract_numpy_panels(raw)
-    from alpha_research.data import _make_trading_days
     dates = _make_trading_days(n_days)
 
     bundles = compute_master_signal(panels, dates)
@@ -89,16 +92,11 @@ def _run_monitor() -> int:
 
     for name, bundle in bundles.items():
         dm = DecayMonitor(name, slack_webhook=webhook or None)
-        # Feed last 60 days of IC estimates (approx from signal autocorrelation)
-        import numpy as np
         sig = bundle.signals
-        ret = np.zeros_like(sig)  # placeholder; production uses actual returns
-        # Rolling 1-day IC from last 60 days
+        # Rolling 1-day IC from last 60 days using consecutive signal correlation
         for t in range(max(0, len(sig) - 60), len(sig) - 1):
             s = sig[t]
-            r = sig[t + 1]   # surrogate: use next signal as proxy
-            sig_std = s.std() + 1e-8
-            ret_std = r.std() + 1e-8
+            r = sig[t + 1]  # surrogate: next signal as proxy for return
             ic = float(np.corrcoef(s, r)[0, 1]) if len(s) > 1 else 0.0
             alert = dm.update(ic)
             if alert:
