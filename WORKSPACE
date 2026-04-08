@@ -24,12 +24,19 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 bazel_skylib_workspace()
 
 # ── Rules Python ──────────────────────────────────────────────────────────────
+# CORRECTED rules_python for 3.13 support
 http_archive(
     name = "rules_python",
-    sha256 = "9c6e26911a79fbf510a8f06d8eedb40f412023cf7fa6d1461def27116bff022c",
+    sha256 = "690e0141724abb568267e003c7b6d9a54925df40c275a870a4d934161dc9dd53",
     strip_prefix = "rules_python-0.40.0",
-    url = "https://github.com/bazelbuild/rules_python/releases/download/0.40.0/rules_python-0.40.0.tar.gz",
+    url = "https://github.com",
 )
+#http_archive(
+#    name = "rules_python",
+#    sha256 = "9c6e26911a79fbf510a8f06d8eedb40f412023cf7fa6d1461def27116bff022c",
+#    strip_prefix = "rules_python-0.40.0",
+#    url = "https://github.com/bazelbuild/rules_python/releases/download/0.40.0/rules_python-0.40.0.tar.gz",
+#)
 load("@rules_python//python:repositories.bzl", "py_repositories", "python_register_toolchains")
 py_repositories()
 python_register_toolchains(
@@ -37,6 +44,15 @@ python_register_toolchains(
     python_version = "3.13",
 )
 load("@python3_13//:defs.bzl", "interpreter")
+
+# ── Rules C++ ──────────────────────────────────────────────────────────────
+# rules_cc is MANDATORY for Bazel 7+ C++
+http_archive(
+    name = "rules_cc",
+    sha256 = "203787c9f9c90fe2da3ca51e360f4b304c4f90bf70327f2f64d048d0a21087e5",
+    strip_prefix = "rules_cc-0.0.9",
+    urls = ["https://github.com"],
+)
 
 # ── Google Test ────────────────────────────────────────────────────────────────
 http_archive(
@@ -55,13 +71,19 @@ http_archive(
     urls = ["https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"],
 )
 
-# ── nanobind ─────────────────────────────────────────────────────────────────
+# ── nanobind (requires recent version for Py 3.13) ─────────────────────────────────────────────────────────────────
+#http_archive(
+#    name = "nanobind",
+#    build_file = "//third_party:nanobind.BUILD",
+#    sha256 = "a2e5ad5c2f4b4a86c8d2c4e3c3b2a15e29abf1a32e55e5d9c7a4b9e2a36a2b14",
+#    strip_prefix = "nanobind-2.4.0",
+#    urls = ["https://github.com/wjakob/nanobind/archive/refs/tags/v2.4.0.tar.gz"],
+#)
 http_archive(
     name = "nanobind",
-    build_file = "//third_party:nanobind.BUILD",
-    sha256 = "a2e5ad5c2f4b4a86c8d2c4e3c3b2a15e29abf1a32e55e5d9c7a4b9e2a36a2b14",
+    sha256 = "2496d04085422896593b4827d09590e87b76f62b1a62d04a60b93809001b979a", 
     strip_prefix = "nanobind-2.4.0",
-    urls = ["https://github.com/wjakob/nanobind/archive/refs/tags/v2.4.0.tar.gz"],
+    urls = ["https://github.com"],
 )
 
 # ── pybind11 (fallback, used by nanobind transitively) ────────────────────────
