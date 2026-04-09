@@ -266,7 +266,7 @@ $$
 Weights estimated via elastic net (L1+L2) on rolling 3-year IS window, re-estimated quarterly:
 
 $$
-\boxed{\hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta}} \left\{ \sum_{t \in \text{IS}} (R^{\text{fut}}_{i,t+k} - \boldsymbol{\beta}^\top \mathbf{x}_{i,t})^2 + \lambda_1 \|\boldsymbol{\beta}\|_1 + \lambda_2 \|\boldsymbol{\beta}\|_2^2 \right\}}
+\boxed{\hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta}} \left\\{ \sum_{t \in \text{IS}} (R^{\text{fut}}_{i,t+k} - \boldsymbol{\beta}^\top \mathbf{x}_{i,t})^2 + \lambda_1 \|\boldsymbol{\beta}\|_1 + \lambda_2 \|\boldsymbol{\beta}\|_2^2 \right\\}}
 $$
 
 *"Elastic net gives us automatic feature selection (L1 zeros out weak components) while keeping the ridge shrinkage (L2 prevents overfitting). With only 3 features we expect all to survive, but for a larger factor universe this matters."*
