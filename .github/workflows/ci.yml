@@ -104,8 +104,9 @@ jobs:
         run: |
           curl -fsSL \
             "https://github.com/bazelbuild/bazelisk/releases/download/v1.22.0/bazelisk-linux-amd64" \
-            -o /usr/local/bin/bazel
-          chmod +x /usr/local/bin/bazel
+            -o ${{ github.workspace }}/bazel
+          chmod +x ${{ github.workspace }}/bazel
+          echo "${{ github.workspace }}" >> $GITHUB_PATH
 
       - name: Bazel version (reads .bazelversion → 7.4.1)
         run: bazel version

@@ -282,13 +282,16 @@ inline void cross_sectional_zscore(VectorXd& v,
  * @return Maximum drawdown as a positive fraction (e.g., 0.15 = 15% MDD).
  */
 [[nodiscard]] inline double max_drawdown(const VectorXd& cum_pnl) noexcept {
+    if (cum_pnl.size() < 2) return 0.0;
     double peak = cum_pnl[0];
     double mdd  = 0.0;
     for (int t = 1; t < static_cast<int>(cum_pnl.size()); ++t) {
         peak = std::max(peak, cum_pnl[t]);
-        mdd  = std::max(mdd, (peak - cum_pnl[t]) / (std::abs(peak) + 1e-12));
+        const double dd = peak - cum_pnl[t];
+        // denominator = abs(peak) + dd ensures result in [0,1] even when peak=0
+        mdd = std::max(mdd, dd / (std::abs(peak) + dd + 1e-12));
     }
-    return mdd;
+    return mdd;  // mathematically bounded in [0, 1)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
