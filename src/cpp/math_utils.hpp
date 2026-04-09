@@ -162,10 +162,10 @@ public:
      * @param kernel Kernel coefficients (oldest-to-newest order).
      * @return Convolution result.
      */
-    template<int K>
+    template<std::size_t K>
     [[nodiscard]] double convolve(const std::array<double, K>& kernel) const noexcept {
         double acc = 0.0;
-        for (int i = 0; i < K && i < count_; ++i) {
+        for (std::size_t i = 0; i < K && i < static_cast<std::size_t>(count_); ++i) {
             const int idx = (head_ - 1 - i) & (N - 1);
             acc += kernel[i] * data_[idx];
         }

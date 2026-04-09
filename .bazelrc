@@ -17,7 +17,7 @@ build --noenable_bzlmod
 test  --noenable_bzlmod
 
 # ── C++ configuration ─────────────────────────────────────────────────────────
-build --cxxopt=-std=c++26
+build --cxxopt=-std=c++23
 build --cxxopt=-O3
 build --cxxopt=-march=native
 build --cxxopt=-Wall
@@ -27,7 +27,7 @@ build --cxxopt=-ffast-math
 # SIMD: enable AVX2 / AVX-512 where available
 build --cxxopt=-mavx2
 build --cxxopt=-mfma
-build --host_cxxopt=-std=c++26
+build --host_cxxopt=-std=c++23
 build --host_cxxopt=-O2
 
 # ── Python configuration ──────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ build --python_version=PY3
 # ── Test flags ────────────────────────────────────────────────────────────────
 test --test_output=all
 test --test_verbose_timeout_warnings
-test --cxxopt=-std=c++26
+test --cxxopt=-std=c++23
 test --cxxopt=-O2
 
 # ── Sanitizer configs ─────────────────────────────────────────────────────────

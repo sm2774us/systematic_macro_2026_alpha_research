@@ -345,7 +345,7 @@ TEST(MAERMEngineTest, ISMInteractionNonLinear) {
 
     // Run warming period
     for (int t = 0; t < 100; ++t) {
-        engine.tick(t < 50 ? bull_day : bear_day);
+        (void)engine.tick(t < 50 ? bull_day : bear_day);
     }
     // Bull regime should have different signals than bear
     auto bull_out = engine.tick(bull_day);

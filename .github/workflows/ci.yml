@@ -54,7 +54,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build libeigen3-dev git g++-14
+            cmake ninja-build libeigen3-dev git g++-14
 
       - uses: actions/setup-python@v5
         with:
@@ -70,10 +70,13 @@ jobs:
           key: cmake-${{ runner.os }}-${{ hashFiles('CMakeLists.txt','src/cpp/**') }}
           restore-keys: cmake-${{ runner.os }}-
 
-      - name: CMake configure
+      - name: CMake configure (g++-14, C++23)
         run: |
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -G Ninja \
-            -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_C_COMPILER=gcc-14
+          cmake -B build -S . \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-14 \
+            -DCMAKE_C_COMPILER=gcc-14 \
+            -G Ninja
 
       - name: CMake build
         run: cmake --build build --parallel
@@ -101,9 +104,8 @@ jobs:
         run: |
           curl -fsSL \
             "https://github.com/bazelbuild/bazelisk/releases/download/v1.22.0/bazelisk-linux-amd64" \
-            -o ${{ github.workspace }}/bazel
-          chmod +x ${{ github.workspace }}/bazel
-          echo "${{ github.workspace }}" >> $GITHUB_PATH
+            -o /usr/local/bin/bazel
+          chmod +x /usr/local/bin/bazel
 
       - name: Bazel version (reads .bazelversion → 7.4.1)
         run: bazel version

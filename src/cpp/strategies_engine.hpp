@@ -494,7 +494,7 @@ struct FDSPConfig {
 class FDSPEngine {
 public:
     static constexpr int N_ASSETS     = 5;   ///< TLT, UUP, GLD, SPY, VX
-    static constexpr int KERNEL_LEN   = 10;  ///< Convolution kernel length
+    static constexpr std::size_t KERNEL_LEN   = 10;  ///< Convolution kernel length
 
     struct DayData {
         double swap_spread_30y;              ///< 30Y swap spread (fraction)
@@ -526,7 +526,7 @@ public:
 
         for (int i = 0; i < N_ASSETS; ++i) {
             // Propagation lag via causal convolution with asset-specific kernel
-            const double prop_lag = fci_buf_.ready(KERNEL_LEN / 2)
+            const double prop_lag = fci_buf_.ready(static_cast<int>(KERNEL_LEN / 2))
                 ? fci_buf_.convolve(kPropKernels[i]) : 0.0;
 
             double sig = cfg_.weights(i, 0) * fci_z
