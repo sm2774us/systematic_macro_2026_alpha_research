@@ -407,7 +407,9 @@ $$
 
 **Three-Component Signal:**
 
-$$\boxed{S^{\text{TPMCR}}_{i,t} = \hat{\beta}_1 \cdot \text{TPM}_{i,t} + \hat{\beta}_2 \cdot \text{CRS}_{i,t} + \hat{\beta}_3 \cdot \text{FiscalStress}_{t} \cdot \mathbb{1}[\text{USD bond}]}$$
+$$
+\boxed{S^{\text{TPMCR}}_{i,t} = \hat{\beta}_1 \cdot \text{TPM}_{i,t} + \hat{\beta}_2 \cdot \text{CRS}_{i,t} + \hat{\beta}_3 \cdot \text{FiscalStress}_{t} \cdot \mathbb{1}[\text{USD bond}]}
+$$
 
   * **Term Premium Momentum (TPM):** ACM/KW model term premium trend predicts long-end futures returns.
   * **Curve Regime Score (CRS):** HMM-classified yield curve regime (bull-flat, bear-steep, etc.) drives carry.
