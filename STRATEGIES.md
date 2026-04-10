@@ -66,11 +66,11 @@
 | \# | Strategy | Asset Class | Horizon |
 |---|---|---|---|
 | 1 | [**P**olicy **D**ivergence × **R**eal **R**ate **M**omentum (**PDRRM**)](#️-strategy-1-pdrrm) | G10 FX Futures (`6J`, `6E`, `6B`, `6A`, `6C`, `6S`, `6N`, `6M`) | 2–8 weeks |
-| 2 | [Term Premium Momentum & Curve Regime Signal (TPMCR)](#-strategy-2-tpmcr) | Rates Futures (`ZN`, `ZB`, `RX`, `G`) | 3–8 weeks |
-| 3 | [Macro-Adjusted Earnings Revision Momentum (MAERM)](#-strategy-3-maerm) | Equity Index Futures (`ES`, `NQ`, `RTY`, `SX5E`) | 2–6 weeks |
-| 4 | [Inventory Surprise × Roll Return Composite (ISRC)](#-strategy-4-isrc) | Energy Futures (`CL`, `NG`, `RB`) | 1–4 weeks |
-| 5 | [Volatility Surface Regime Arbitrage (VSRA)](#️-strategy-5-vsra) | SPX Options + VIX Futures | 1–3 weeks |
-| 6 | [Fiscal Dominance Shock Propagation (FDSP)](#-strategy-6-fdsp) | Cross-Asset (UST + USD + Gold + Equities) | 2–8 weeks |
+| 2 | [**T**erm **P**remium **M**omentum & **C**urve **R**egime Signal (**TPMCR**)](#-strategy-2-tpmcr) | Rates Futures (`ZN`, `ZB`, `RX`, `G`) | 3–8 weeks |
+| 3 | [**M**acro-**A**djusted **E**arnings **R**evision **M**omentum (**MAERM**)](#-strategy-3-maerm) | Equity Index Futures (`ES`, `NQ`, `RTY`, `SX5E`) | 2–6 weeks |
+| 4 | [**I**nventory **S**urprise × **R**oll Return **C**omposite (**ISRC**)](#-strategy-4-isrc) | Energy Futures (`CL`, `NG`, `RB`) | 1–4 weeks |
+| 5 | [**V**olatility **S**urface **R**egime **A**rbitrage (**VSRA**)](#️-strategy-5-vsra) | SPX Options + VIX Futures | 1–3 weeks |
+| 6 | [**F**iscal **D**ominance **S**hock **P**ropagation (**FDSP**)](#-strategy-6-fdsp) | Cross-Asset (UST + USD + Gold + Equities) | 2–8 weeks |
 
 [⬆ Back to Top](#-table-of-contents)
 
