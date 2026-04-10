@@ -366,6 +366,7 @@ r^{\text{real}}_{i,t} = r^{\text{nom}}_{i,t} - \pi^{\text{be}}_{i,t}
 $$
   
 * **RRDM:**
+
 $$
 \text{RRDM}_{i,t} = z \left( \Delta r^{\text{real}}_{i,t} - \Delta r^{\text{real}}_{i,t-\tau} \right)
 $$
@@ -375,6 +376,7 @@ over a 20-day rolling window.
 * **PSS:** Exponentially decayed sum of OIS forward surprises on CB meeting days (half-life of 10 days).
   
 * **RAC:**
+
 $$
 \text{RAC}_{i,t} = \frac{f_{i,t} - s_{i,t}}{\sigma^{\text{realized}}_{i,t}(21)}
 $$
