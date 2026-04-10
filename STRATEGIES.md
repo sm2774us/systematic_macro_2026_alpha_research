@@ -66,11 +66,11 @@
 | \# | Strategy | Asset Class | Horizon |
 |---|---|---|---|
 | 1 | [**P**olicy **D**ivergence × **R**eal **R**ate **M**omentum (**PDRRM**)](#️-strategy-1-pdrrm) | G10 FX Futures (`6J`, `6E`, `6B`, `6A`, `6C`, `6S`, `6N`, `6M`) | 2–8 weeks |
-| 2 | [Term Premium Momentum & Curve Regime Signal (TPMCR)](https://www.google.com/search?q=%23strategy-1-tpmcr) | Rates Futures (`ZN`, `ZB`, `RX`, `G`) | 3–8 weeks |
-| 3 | [Macro-Adjusted Earnings Revision Momentum (MAERM)](https://www.google.com/search?q=%23strategy-2-maerm) | Equity Index Futures (`ES`, `NQ`, `RTY`, `SX5E`) | 2–6 weeks |
-| 4 | [Inventory Surprise × Roll Return Composite (ISRC)](https://www.google.com/search?q=%23strategy-3-isrc) | Energy Futures (`CL`, `NG`, `RB`) | 1–4 weeks |
-| 5 | [Volatility Surface Regime Arbitrage (VSRA)](https://www.google.com/search?q=%23strategy-4-vsra) | SPX Options + VIX Futures | 1–3 weeks |
-| 6 | [Fiscal Dominance Shock Propagation (FDSP)](https://www.google.com/search?q=%23strategy-5-fdsp) | Cross-Asset (UST + USD + Gold + Equities) | 2–8 weeks |
+| 2 | [Term Premium Momentum & Curve Regime Signal (TPMCR)](#-strategy-2-tpmcr) | Rates Futures (`ZN`, `ZB`, `RX`, `G`) | 3–8 weeks |
+| 3 | [Macro-Adjusted Earnings Revision Momentum (MAERM)](#-strategy-3-maerm) | Equity Index Futures (`ES`, `NQ`, `RTY`, `SX5E`) | 2–6 weeks |
+| 4 | [Inventory Surprise × Roll Return Composite (ISRC)](#-strategy-4-isrc) | Energy Futures (`CL`, `NG`, `RB`) | 1–4 weeks |
+| 5 | [Volatility Surface Regime Arbitrage (VSRA)](#️-strategy-5-vsra) | SPX Options + VIX Futures | 1–3 weeks |
+| 6 | [Fiscal Dominance Shock Propagation (FDSP)](#-strategy-6-fdsp) | Cross-Asset (UST + USD + Gold + Equities) | 2–8 weeks |
 
 [⬆ Back to Top](#-table-of-contents)
 
@@ -357,26 +357,27 @@ $$\boxed{S_{i,t} = \hat{\alpha}_1 \cdot \text{RRDM}_{i,t} + \hat{\alpha}_2 \cdot
 
 #### **PDRRM** - 2026 Macro Thesis & Feature Engineering
 
-  * Money flows to where it earns the most in real terms; when the direction of real returns changes, the market slowly prices it in.
-  * The JPY/USD real rate differential is the most powerful signal of 2026 as the BOJ hikes to 1.00% while the Fed slow-cuts.
-  * **Real Rate:**
-    $$
-    r^{\text{real}}_{i,t} = r^{\text{nom}}_{i,t} - \pi^{\text{be}}_{i,t}
-    $$
-    
-  * **RRDM:**
-    $$
-    \text{RRDM}_{i,t} = z \left( \Delta r^{\text{real}}_{i,t} - \Delta r^{\text{real}}_{i,t-\tau} \right)
-    $$
+* Money flows to where it earns the most in real terms; when the direction of real returns changes, the market slowly prices it in.
+* The JPY/USD real rate differential is the most powerful signal of 2026 as the BOJ hikes to 1.00% while the Fed slow-cuts.
+* **Real Rate:**
 
-    over a 20-day rolling window.
-    
-  * **PSS:** Exponentially decayed sum of OIS forward surprises on CB meeting days (half-life of 10 days).
-    
-  * **RAC:**
-    $$
-    \text{RAC}_{i,t} = \frac{f_{i,t} - s_{i,t}}{\sigma^{\text{realized}}_{i,t}(21)}
-    $$
+$$
+r^{\text{real}}_{i,t} = r^{\text{nom}}_{i,t} - \pi^{\text{be}}_{i,t}
+$$
+  
+* **RRDM:**
+$$
+\text{RRDM}_{i,t} = z \left( \Delta r^{\text{real}}_{i,t} - \Delta r^{\text{real}}_{i,t-\tau} \right)
+$$
+
+over a 20-day rolling window.
+  
+* **PSS:** Exponentially decayed sum of OIS forward surprises on CB meeting days (half-life of 10 days).
+  
+* **RAC:**
+$$
+\text{RAC}_{i,t} = \frac{f_{i,t} - s_{i,t}}{\sigma^{\text{realized}}_{i,t}(21)}
+$$
 
 #### **PDRRM** - Portfolio Integration & Risk (Gate 5 & 6)
 
@@ -412,12 +413,25 @@ $$\boxed{S^{\text{TPMCR}}_{i,t} = \hat{\beta}_1 \cdot \text{TPM}_{i,t} + \hat{\b
 
 #### **TPMCR** - 2026 Macro Thesis & Feature Engineering
 
-  * The ACM term premium on the US 10Y has trended upward since Q4 2025 due to fiscal concerns and supply.
-  * The model-implied term premium takes 3–5 weeks to fully reflect in spot futures prices due to duration manager rebalancing lags.
-  * TPMCR captures the lag: positive ACM term premium momentum prompts a short ZB and long ZN position.
-  * **TPM** is defined as $\text{TPM}_{t} = z_{cs}\!\left(\text{TP}^{\text{ACM}}_{10Y,t} - \text{TP}^{\text{ACM}}_{10Y,t-\tau}\right)$ where $\tau = 15$ trading days.
-  * **CRS** utilizes an HMM to classify the yield curve into 4 states: bull-flat, bull-steep, bear-flat, bear-steep.
-  * **FSO** is defined as $\text{FSO}_{t} = z\!\left(-\text{SwapSpread}^{30Y}_{t} + \delta \cdot \Delta\text{SwapSpread}^{30Y}_{t-5:t}\right) \cdot \mathbb{1}[\text{USD bond}]$ with a negative spread indicating fiscal stress.
+* The ACM term premium on the US 10Y has trended upward since Q4 2025 due to fiscal concerns and supply.
+* The model-implied term premium takes 3–5 weeks to fully reflect in spot futures prices due to duration manager rebalancing lags.
+* TPMCR captures the lag: positive ACM term premium momentum prompts a short ZB and long ZN position.
+* **TPM** is defined as
+
+$$
+\text{TPM}_{t} = z_{cs}\!\left(\text{TP}^{\text{ACM}}_{10Y,t} - \text{TP}^{\text{ACM}}_{10Y,t-\tau}\right)
+$$
+
+where $\tau = 15$ trading days.
+
+* **CRS** utilizes an HMM to classify the yield curve into 4 states: bull-flat, bull-steep, bear-flat, bear-steep.
+* **FSO** is defined as
+
+$$
+\text{FSO}_{t} = z\!\left(-\text{SwapSpread}^{30Y}_{t} + \delta \cdot \Delta\text{SwapSpread}^{30Y}_{t-5:t}\right) \cdot \mathbb{1}[\text{USD bond}]
+$$
+
+with a negative spread indicating fiscal stress.
 
 [⬆ Back to Top](#-table-of-contents)
 
@@ -447,11 +461,21 @@ $$\boxed{S^{\text{MAERM}}_{i,t} = \hat{\gamma}_1 \cdot \text{ERB}_{i,t} + \hat{\
 
 #### **MAERM** - 2026 Macro Thesis & Feature Engineering
 
-  * Tariff implementation hits cost structures for the first time in Q2 earnings guidance.
-  * AI hyperscaler revenues begin inflection in Q3 2026, driving massive divergence between NQ (tech) and RTY (domestic).
-  * **ERB** uses a 5-day net revision window: $\text{ERB}_{i,t} = z\!\left(\frac{N^{+}_{i,t-5:t} - N^{-}_{i,t-5:t}}{N^{+}_{i,t-5:t} + N^{-}_{i,t-5:t} + N^{0}_{i,t-5:t}}\right)$.
-  * **MRF** maps ISM to a [0,1] probability: $\text{MRF}_{t} = \sigma\!\left(\alpha_0 + \alpha_1 \cdot \text{ISM}_{t} + \alpha_2 \cdot \Delta\text{ISM}_{t-1:t}\right)$.
-  * **Surprise Decay (SD)** applies a 30-day half-life to the actual vs consensus EPS gap.
+* Tariff implementation hits cost structures for the first time in Q2 earnings guidance.
+* AI hyperscaler revenues begin inflection in Q3 2026, driving massive divergence between NQ (tech) and RTY (domestic).
+* **ERB** uses a 5-day net revision window:
+
+$$
+\text{ERB}_{i,t} = z\!\left(\frac{N^{+}_{i,t-5:t} - N^{-}_{i,t-5:t}}{N^{+}_{i,t-5:t} + N^{-}_{i,t-5:t} + N^{0}_{i,t-5:t}}\right)
+$$
+
+* **MRF** maps ISM to a [0,1] probability:
+
+$$
+\text{MRF}_{t} = \sigma\!\left(\alpha_0 + \alpha_1 \cdot \text{ISM}_{t} + \alpha_2 \cdot \Delta\text{ISM}_{t-1:t}\right)
+$$
+
+* **Surprise Decay (SD)** applies a 30-day half-life to the actual vs consensus EPS gap.
 
 [⬆ Back to Top](#-table-of-contents)
 
@@ -480,8 +504,19 @@ $$\boxed{S^{\text{ISRC}}_{i,t} = \hat{\delta}_1 \cdot \text{IS}_{i,t} + \hat{\de
 
 #### **ISRC** - Feature Engineering
 
-  * **IS:** $z\!\left(-\frac{\text{EIA}^{\text{actual}}_{i,t} - \text{EIA}^{\text{consensus}}_{i,t}}{\sigma^{52W}_{\text{surprise},i}}\right)$. The negative sign ensures that a drawdown greater than expected is bullish.
-  * **RRM:** 20-day trend in annualized roll return. $\text{RRM}_{i,t} = z\!\left(\text{RR}_{i,t} - \text{RR}_{i,t-20}\right)$.
+* **IS:**
+
+$$
+z\!\left(-\frac{\text{EIA}^{\text{actual}}_{i,t} - \text{EIA}^{\text{consensus}}_{i,t}}{\sigma^{52W}_{\text{surprise},i}}\right)
+$$
+
+The negative sign ensures that a drawdown greater than expected is bullish.
+
+* **RRM:** 20-day trend in annualized roll return.
+
+$$
+\text{RRM}_{i,t} = z\!\left(\text{RR}_{i,t} - \text{RR}_{i,t-20}\right)
+$$
 
 [⬆ Back to Top](#-table-of-contents)
 
@@ -510,9 +545,29 @@ $$\boxed{S^{\text{VSRA}}_{t} = \hat{\eta}_1 \cdot \text{TSS}_{t} + \hat{\eta}_2 
 
 #### **VSRA** - Feature Engineering
 
-  * **TSS:** $\text{TSS}_{t} = z\!\left(\ln\!\left(\frac{\text{VIX3M}_{t}}{\text{VIX}_{t}}\right)\right)$. Steep contango signals an expected vol decrease.
-  * **SKA:** $\text{SKA}_{t} = z\!\left((\sigma^{25P}_{t} - \sigma^{25C}_{t}) - \widehat{\text{RSkew}}_{t}(21d)\right)$. Highlights when puts are overpriced relative to realized third-moment skew.
-  * **VRP:** $\text{VRP}_{t} = z\!\left(\text{VIX}_{t}^2/100 - \text{RV}_{21,t}\right)$. High VRP signals mean-reversion via short vol trades.
+* **TSS:**
+
+$$
+\text{TSS}_{t} = z\!\left(\ln\!\left(\frac{\text{VIX3M}_{t}}{\text{VIX}_{t}}\right)\right)
+$$
+
+Steep contango signals an expected vol decrease.
+
+* **SKA:**
+ 
+ $$
+ \text{SKA}_{t} = z\!\left((\sigma^{25P}_{t} - \sigma^{25C}_{t}) - \widehat{\text{RSkew}}_{t}(21d)\right)
+ $$
+
+Highlights when puts are overpriced relative to realized third-moment skew.
+
+* **VRP:**
+
+$$
+\text{VRP}_{t} = z\!\left(\text{VIX}_{t}^2/100 - \text{RV}_{21,t}\right)
+$$
+
+High VRP signals mean-reversion via short vol trades.
 
 [⬆ Back to Top](#-table-of-contents)
 
@@ -535,8 +590,13 @@ $$\boxed{S^{\text{VSRA}}_{t} = \hat{\eta}_1 \cdot \text{TSS}_{t} + \hat{\eta}_2 
 
 $$\boxed{S^{\text{FDSP}}_{\text{asset},t} = \hat{\phi}_{\text{asset}} \cdot \text{FCI}_{t} + \hat{\psi}_{\text{asset}} \cdot \text{PropagationLag}_{\text{asset},t}}$$
 
-  * **Fiscal Composite Index (FCI):** $z\!\left(w_1 \cdot (-\text{SS}_{30Y,t}) + w_2 \cdot \text{CDS}_{5Y,t} + w_3 \cdot \text{TBill Spike}_{t}\right)$.
-  * **Propagation Lag:** Each asset class responds to FCI shocks with a documented lag (convolved using asset-specific historical kernels).
+* **Fiscal Composite Index (FCI):**
+
+$$
+z\!\left(w_1 \cdot (-\text{SS}_{30Y,t}) + w_2 \cdot \text{CDS}_{5Y,t} + w_3 \cdot \text{TBill Spike}_{t}\right)
+$$
+
+* **Propagation Lag:** Each asset class responds to FCI shocks with a documented lag (convolved using asset-specific historical kernels).
 
 [⬆ Back to Top](#-table-of-contents)
 
