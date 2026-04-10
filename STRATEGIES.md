@@ -459,7 +459,7 @@ To ensure we aren't over-exposed, we decompose the yield curve into three moveme
 
 > **Final Status:** Gate 6 Passed. Ready for **Production FIX (Financial Information eXchange)** protocol deployment.
 >
-> *Note: This is just an example deployment might mean something totally different depending on the context (but usually an OMS).*
+> *Note: This is just an example. "Deployment" might mean something totally different depending on the context (but usually an OMS).*
 >
 
 [⬆ Back to Top](#-table-of-contents)
