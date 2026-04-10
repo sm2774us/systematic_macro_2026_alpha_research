@@ -359,10 +359,21 @@ $$\boxed{S_{i,t} = \hat{\alpha}_1 \cdot \text{RRDM}_{i,t} + \hat{\alpha}_2 \cdot
 
   * Money flows to where it earns the most in real terms; when the direction of real returns changes, the market slowly prices it in.
   * The JPY/USD real rate differential is the most powerful signal of 2026 as the BOJ hikes to 1.00% while the Fed slow-cuts.
-  * **Real Rate:** $r^{\text{real}}_{i,t} = r^{\text{nom}}_{i,t} - \pi^{\text{be}}_{i,t}$.
-  * **RRDM:** $\text{RRDM}_{i,t} = z\!\left(\Delta r^{\text{real}}_{i,t} - \Delta r^{\text{real}}_{i,t-\tau}\right)$ over a 20-day rolling window.
+  * **Real Rate:**
+    
+    $$r^{\text{real}}_{i,t} = r^{\text{nom}}_{i,t} - \pi^{\text{be}}_{i,t}$$
+    
+  * **RRDM:**
+    
+    $$\text{RRDM}_{i,t} = z\!\left(\Delta r^{\text{real}}_{i,t} - \Delta r^{\text{real}}_{i,t-\tau}\right)$$
+
+    over a 20-day rolling window.
+    
   * **PSS:** Exponentially decayed sum of OIS forward surprises on CB meeting days (half-life of 10 days).
-  * **RAC:** $\text{RAC}_{i,t} = \frac{f_{i,t} - s_{i,t}}{\sigma^{\text{realized}}_{i,t}(21)}$.
+    
+  * **RAC:**
+
+    $$\text{RAC}_{i,t} = \frac{f_{i,t} - s_{i,t}}{\sigma^{\text{realized}}_{i,t}(21)}$$
 
 #### **PDRRM** - Portfolio Integration & Risk (Gate 5 & 6)
 
