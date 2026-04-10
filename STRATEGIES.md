@@ -548,6 +548,13 @@ $$
   * **Curve Regime Score (CRS):** HMM-classified yield curve regime (bull-flat, bear-steep, etc.) drives carry.
   * **Fiscal Stress Overlay (FSO):** US 30Y swap spread + CDS-implied fiscal stress amplifies term premium signal.
 
+| State | Curve Regime | Signal for ZB | Signal for ZN | Trade |
+|---|---|---|---|---|
+| 1 | Bull-Flat | +1 (long) | 0 | Long ZB (flattener winners) |
+| 2 | Bull-Steep | +0.5 | +1 | Long ZN (belly outperforms) |
+| 3 | Bear-Flat | -1 (short) | -0.5 | Short ZB (long end worst) |
+| 4 | Bear-Steep | -0.5 | -1 | Short ZN (curve steepens → front anchored) |
+
 #### **TPMCR** - 2026 Macro Thesis & Feature Engineering
 
 * The ACM term premium on the US 10Y has trended upward since Q4 2025 due to fiscal concerns and supply.
@@ -569,6 +576,47 @@ $$
 $$
 
 with a negative spread indicating fiscal stress.
+
+---
+
+In the context of fixed-income research, **KW** stands for the **Kim-Wright** model.
+
+While the **ACM** model (Adrian-Crump-Moench) is the flagship model used by the **Federal Reserve Bank of New York**, the **KW** model is the primary term structure model maintained by the **Federal Reserve Board of Governors** (specifically developed by economists **Don H. Kim** and **Jonathan H. Wright**).
+
+---
+
+## 🏛️ The Kim-Wright (KW) Model: Deep-Dive
+
+### 🧩 Foundation
+The KW model is a **three-factor, arbitrage-free term structure model**. Like the ACM model, its primary job is to take the yield of a Treasury bond and "unbundle" it into two components: the path of expected future short-term interest rates and the **Term Premium**.
+
+### 🚀 Advanced: The State-Space Approach
+The KW model differs from ACM in its estimation methodology. While ACM uses a multi-step linear regression approach (which is fast and robust), KW typically uses a **State-Space Representation** and is estimated via the **Kalman Filter**. This allows it to incorporate survey data (like the Blue Chip Financial Forecasts) to help anchor the "expectations" component, making the resulting Term Premium less volatile but potentially more "fundamental."
+
+#### The Equation
+$$
+y_{n,t} = \mathbf{a}_n + \mathbf{b}_n^\top \mathbf{X}_t
+$$
+
+* **Read-Out:** "The yield of a bond with maturity n at time t is equal to a maturity-specific constant a-sub-n, plus the transpose of the maturity-specific loading vector b-sub-n multiplied by the vector of latent state factors X at time t."
+* **Feynman Explanation:** Imagine the yield curve is like a piece of flexible fabric. The KW model says there are three "invisible hands" (factors) pulling on that fabric at the same time: one pulls the whole cloth up (Level), one tilts it (Slope), and one bends the middle (Curvature). By measuring how hard those hands are pulling, the model can figure out how much of the price is due to where we think rates are going versus how much extra "safety margin" investors are demanding.
+
+
+
+---
+
+### ⚖️ ACM vs. KW: Why mention both?
+
+In systematic alpha research, practitioners often use both models to create a **Consensus Term Premium** or a **Model-Relative Signal**.
+
+| Feature | ACM (Adrian-Crump-Moench) | KW (Kim-Wright) |
+| :--- | :--- | :--- |
+| **Source** | Federal Reserve Bank of NY | Federal Reserve Board |
+| **Method** | Linear Regression (Fast) | Kalman Filter (Dynamic) |
+| **Inputs** | Purely Market Prices | Prices + Survey Data |
+| **Signal Behavior** | More reactive to daily flows | More anchored to macro expectations |
+
+**The Alpha Hook:** When the **ACM/KW Spread** widens (i.e., the New York model sees a rising term premium that the Board's model doesn't), it often signals a "technical" or "positioning-driven" move in the long-end of the curve that is likely to mean-revert or trend—this is the "Term Premium Momentum" you're looking for.
 
 [⬆ Back to Top](#-table-of-contents)
 
