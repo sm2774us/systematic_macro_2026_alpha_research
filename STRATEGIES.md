@@ -143,6 +143,26 @@ $$
 
 **Gate 1 PASSES ✅**
 
+---
+
+#### 🧩 Foundation
+
+At its simplest, a bond yield is the interest rate you get for lending money. However, a long-term yield is actually composed of two "buckets": what people think short-term rates will be in the future, and an extra "hassle fee" for locking your money up for a long time.
+
+#### 🚀 Advanced: The Adrian-Crump-Moench (ACM) Model
+
+We focus on the **Adrian-Crump-Moench (ACM)** model provided by the Federal Reserve Bank of New York. It uses a "no-arbitrage" affine term structure model to peel apart the **Expectations Hypothesis** from the **Term Premium**.
+
+##### The Equation
+
+$$
+y_{n,t} = \frac{1}{n} \sum_{i=0}^{n-1} E_t[r_{t+i}] + \text{TP}_{n,t}
+$$
+
+  * **Read-Out:** "The yield of an n-year bond at time t equals the average of the expected future short-term rates from now until n-years, plus the Term Premium for that n-year maturity at time t."
+  * **Feynman Explanation:** Imagine you're at a fair. You can either buy 10 one-day passes or one 10-day pass. The price of the 10-day pass should be the average cost of the daily passes, plus a little extra because you're committing your money and don't know if it will rain next week. That "rain insurance" is the **Term Premium**. We trade when that insurance price starts trending.
+
+
 [⬆ Back to Top](#-table-of-contents)
 
 ---
@@ -172,6 +192,25 @@ $$
 
 **Gate 2 PASSES ✅**
 
+---
+
+#### 🧩 Foundation
+
+We need clean price data for Treasury Futures: **ZN** (10-Year Note) and **ZB** (30-Year Bond). We also need the **ACM Term Premium** data from the Federal Reserve.
+
+#### 🚀 Advanced: Convexity and Duration Normalization
+
+Because a 30-year bond moves much more than a 10-year bond for the same change in interest rates, we must calculate the **Dollar Value of a Basis Point (DV01)**.
+
+##### The Equation
+
+$$
+\Delta P \approx -(D_{mod} \cdot P) \cdot \Delta y
+$$
+
+  * **Read-Out:** "The change in price is approximately equal to the negative of the modified duration times the price, multiplied by the change in yield."
+  * **Feynman Explanation:** Think of bonds like see-saws. A 10-year bond is a short see-saw; a 30-year bond is a very long one. If the "interest rate" (the person in the middle) moves an inch, the end of the long see-saw moves a foot, while the short one only moves a few inches. To play fair, we have to sit closer to the middle on the long see-saw. That's **DV01-weighting**.
+
 [⬆ Back to Top](#-table-of-contents)
 
 ---
@@ -198,6 +237,15 @@ $$
 $$
 
 *"We scale up the signal for shorter-duration instruments to make all bets DV01-equivalent. A 1bp TPM signal in ZB (long duration) means less re-pricing than in ZN (shorter duration), so we normalize."*
+
+**Concept:** We don't care what the Term Premium is; we care where it is *going*.
+
+$$
+\text{TPM}_{t} = z\left(\text{TP}_{t} - \text{TP}_{t-15}\right)
+$$
+
+  * **Read-Out:** "The Term Premium Momentum at time t is the Z-score of the current Term Premium minus the Term Premium fifteen days ago."
+  * **Feynman Explanation:** If the "rain insurance" at the fair was $5 last week, $6 yesterday, and $7 today, something is making people nervous. We follow that trend.
 
 #### 3.2 Curve Regime Score (CRS)
 
@@ -244,6 +292,15 @@ Where $v_k \in \{+1, +0.5, -1, -0.5\}$ are the regime-specific signal values abo
 
 *"Instead of hard-switching regimes, we use a soft weighted average. If we're 60% sure we're in bear-steep and 40% sure bear-flat, the CRS reflects that uncertainty."*
 
+**Concept:** The market behaves differently if rates are rising (Bear) or falling (Bull). We use a **Hidden Markov Model (HMM)** to guess the "mood" of the market.
+
+$$
+P(S_t = j | O_{1:t})
+$$
+
+  * **Read-Out:** "The probability that the market is in state j at time t, given all the observations from time one until now."
+  * **Feynman Explanation:** It’s like trying to guess if your boss is in a bad mood without asking. You look at "observations": Is he drinking extra coffee? Is he walking fast? We look at the yield curve to see if the market is "Bear-Steepening" (angry) or "Bull-Flattening" (calm).
+
 #### 3.3 Fiscal Stress Overlay (FSO)
 
 $$
@@ -256,6 +313,14 @@ Where:
 - $\mathbb{1}[\text{USD bond}]$ = 1 only for ZN, ZB, TN; 0 for RX, G
 
 *"The 30-year swap spread going more negative means the market demands more yield on Treasuries than on comparable swaps — a signal of sovereign stress. This flag amplifies our short-duration / short-long-end signal specifically for US bonds."*
+
+**Concept:** When the government spends too much, **Swap Spreads** (the difference between private and government borrowing costs) turn negative.
+
+$$
+\text{FSO}_{t} = \text{SwapRate}_{30Y} - \text{Yield}_{30Y}
+$$
+
+  * **Read-Out:** "The Fiscal Stress Overlay equals the thirty-year swap rate minus the thirty-year Treasury yield."
 
 #### 3.4 Composite Signal
 
@@ -270,6 +335,14 @@ $$
 $$
 
 *"Elastic net gives us automatic feature selection (L1 zeros out weak components) while keeping the ridge shrinkage (L2 prevents overfitting). With only 3 features we expect all to survive, but for a larger factor universe this matters."*
+
+**Concept:** We blend these three signals using **Elastic Net Regression**, which combines **L1 (Lasso)** to throw away junk and **L2 (Ridge)** to keep the remaining weights stable.
+
+$$
+\hat{\beta} = \arg\min_{\beta} \left( \|y - X\beta\|^2 + \lambda_1 \|\beta\|_1 + \lambda_2 \|\beta\|_2^2 \right)
+$$
+
+  * **Read-Out:** "The estimated weights beta are the values that minimize the sum of squared errors plus the L-one penalty on beta plus the L-two penalty on beta squared."
 
 **Gate 3 PASSES ✅**
 
@@ -289,6 +362,23 @@ $$
 
 **Gate 4 PASSES ✅**
 
+---
+
+#### 🧩 Foundation
+
+We check the **Information Coefficient (IC)**, which is just a fancy word for "How often are we right?"
+
+#### 🚀 Advanced: Spanning Regression (Orthogonality)
+
+We must prove our signal isn't just a "secret" way of trading the general market.
+
+$$
+R_{\text{strategy}} = \alpha + \beta_1 R_{\text{Market}} + \beta_2 R_{\text{Carry}} + \epsilon
+$$
+
+  * **Read-Out:** "The strategy return equals alpha plus beta-one times the market return plus beta-two times the carry return plus the error term."
+  * **Feynman Explanation:** If I claim I have a "special" way to pick winning horses, but my picks always match the fastest horses on the leaderboard, I don't have a secret—I'm just watching the leaderboard. **Alpha** is the profit I make that *doesn't* come from the leaderboard.
+
 [⬆ Back to Top](#-table-of-contents)
 
 ---
@@ -304,6 +394,23 @@ $$
 The PSS-equivalent here is **the ACM term premium momentum** — model-based, not directly observable in prices — creating orthogonality to pure price-based factors.
 
 **Gate 5 PASSES ✅**
+
+---
+
+#### 🧩 Foundation
+
+We check the **Information Coefficient (IC)**, which is just a fancy word for "How often are we right?"
+
+#### 🚀 Advanced: Spanning Regression (Orthogonality)
+
+We must prove our signal isn't just a "secret" way of trading the general market.
+
+$$
+R_{\text{strategy}} = \alpha + \beta_1 R_{\text{Market}} + \beta_2 R_{\text{Carry}} + \epsilon
+$$
+
+  * **Read-Out:** "The strategy return equals alpha plus beta-one times the market return plus beta-two times the carry return plus the error term."
+  * **Feynman Explanation:** If I claim I have a "special" way to pick winning horses, but my picks always match the fastest horses on the leaderboard, I don't have a secret—I'm just watching the leaderboard. **Alpha** is the profit I make that *doesn't* come from the leaderboard.
 
 [⬆ Back to Top](#-table-of-contents)
 
@@ -327,7 +434,33 @@ $$
 | PC2 | Slope (2s10s steepening) | ~20% | Primary signal vehicle |
 | PC3 | Curvature (belly rich/cheap) | ~8% | Tactical |
 
+#### 🚀 Advanced: Quadratic Programming (QP) Optimization
+
+We use a **Quadratic Programming (QP)** solver to build the final portfolio. It looks for the highest return with the lowest risk, while following "Golden Rules" (Constraints).
+
+##### The Objective Function
+
+$$
+\min_{w} \left( \frac{1}{2} w^T \Sigma w - \lambda w^T S \right)
+$$
+
+  * **Read-Out:** "Minimize with respect to weights w: one-half times w-transpose times the covariance matrix Sigma times w, minus lambda times w-transpose times the signal vector S."
+  * **Feynman Explanation:** You have a bag of different seeds. Some grow fast (High Alpha) but need lots of water (High Risk). Others grow slow but are hardy. The **Optimizer** is like a master gardener who tells you exactly how many of each seed to plant to get the most food without the whole garden dying if it doesn't rain.
+
+#### 📊 Principal Component Analysis (PCA) Risk Read-Out
+
+To ensure we aren't over-exposed, we decompose the yield curve into three movements:
+
+1.  **PC1 (Level):** Everything moves up or down together (70% of risk).
+2.  **PC2 (Slope):** The long end moves more than the short end (20% of risk).
+3.  **PC3 (Curvature):** The middle of the curve moves differently (10% of risk).
+
 **Gate 6 PASSES ✅**
+
+> **Final Status:** Gate 6 Passed. Ready for **Production FIX (Financial Information eXchange)** protocol deployment.
+>
+> *Note: This is just an example deployment might mean something totally different depending on the context (but usually an OMS).*
+>
 
 [⬆ Back to Top](#-table-of-contents)
 
