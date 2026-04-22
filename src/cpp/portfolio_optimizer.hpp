@@ -96,6 +96,7 @@ namespace alpha::portfolio
     class SignalDecayMonitor
     {
     public:
+        virtual ~SignalDecayMonitor() = default; // <--- ADD THIS
         explicit SignalDecayMonitor(int window = 60) noexcept
             : window_{window}, ic_tracker_{static_cast<double>(window)} {}
 
