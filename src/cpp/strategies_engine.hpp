@@ -37,7 +37,7 @@ namespace alpha::strategies
     /**
      * @brief Configuration for the TPMCR engine.
      */
-    struct TPMCRConfig
+    struct __attribute__((visibility("default"))) TPMCRConfig
     {
         virtual ~TPMCRConfig();       // <--- ADD THIS
         int tpm_window{15};           ///< Term-premium momentum look-back (trading days)
@@ -58,7 +58,7 @@ namespace alpha::strategies
      * CRS_{t}  = HMM state-mapped signal {-1, -0.5, +0.5, +1}
      * FSO_{t}  = z( -swap_spread_30Y + cds_5Y_proxy )
      */
-    class TPMCREngine
+    class __attribute__((visibility("default"))) TPMCREngine
     {
     public:
         virtual ~TPMCREngine(); // <--- ADD THIS
@@ -195,7 +195,7 @@ namespace alpha::strategies
     /**
      * @brief Configuration for the MAERM engine.
      */
-    struct MAERMConfig
+    struct __attribute__((visibility("default"))) MAERMConfig
     {
         virtual ~MAERMConfig();        // <--- ADD THIS
         int revision_window{21};       ///< EPS revision look-back (trading days)
@@ -214,7 +214,7 @@ namespace alpha::strategies
      * ISM  = z-scored ISM manufacturing PMI (macro regime conditioner)
      * PEAD = Post-earnings announcement drift (24-hour window)
      */
-    class MAERMEngine
+    class __attribute__((visibility("default"))) MAERMEngine
     {
     public:
         virtual ~MAERMEngine(); // <--- ADD THIS
@@ -292,7 +292,7 @@ namespace alpha::strategies
     /**
      * @brief Configuration for the ISRC engine.
      */
-    struct ISRCConfig
+    struct __attribute__((visibility("default"))) ISRCConfig
     {
         virtual ~ISRCConfig();        // <--- ADD THIS
         int surprise_halflife{5};     ///< EIA surprise EWMA half-life (days)
@@ -313,7 +313,7 @@ namespace alpha::strategies
      *
      * Key non-linearity: backwardation × positive IS >> contango × positive IS
      */
-    class ISRCEngine
+    class __attribute__((visibility("default"))) ISRCEngine
     {
     public:
         virtual ~ISRCEngine(); // <--- ADD THIS
@@ -393,7 +393,7 @@ namespace alpha::strategies
     /**
      * @brief Configuration for the VSRA engine.
      */
-    struct VSRAConfig
+    struct __attribute__((visibility("default"))) VSRAConfig
     {
         virtual ~VSRAConfig();            // <--- ADD THIS
         int vrp_window{21};               ///< VRP rolling window (days)
@@ -413,7 +413,7 @@ namespace alpha::strategies
      *
      * Signal: S^VSRA_t = β₁·VRP_t + β₂·TSS_t + β₃·SKA_t
      */
-    class VSRAEngine
+    class __attribute__((visibility("default"))) VSRAEngine
     {
     public:
         virtual ~VSRAEngine(); // <--- ADD THIS
@@ -500,7 +500,7 @@ namespace alpha::strategies
     /**
      * @brief Configuration for the FDSP cross-asset engine.
      */
-    struct FDSPConfig
+    struct __attribute__((visibility("default"))) FDSPConfig
     {
         virtual ~FDSPConfig();           // <--- ADD THIS
         double fci_shock_threshold{1.5}; ///< FCI z-score to activate signal
@@ -534,7 +534,7 @@ namespace alpha::strategies
      *   - Gold peaks (day 5-7)
      *   - Treasuries V-shape bottom (day 7-10), then recovery
      */
-    class FDSPEngine
+    class __attribute__((visibility("default"))) FDSPEngine
     {
     public:
         virtual ~FDSPEngine();                        // <--- ADD THIS
