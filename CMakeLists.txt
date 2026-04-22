@@ -51,7 +51,13 @@ FetchContent_Declare(
   GIT_SHALLOW    TRUE
 )
 FetchContent_MakeAvailable(nanobind)
-nanobind_add_module(alpha_cpp src/cpp/bindings.cpp)
+# Add ALL required source files here
+nanobind_add_module(alpha_cpp 
+    src/cpp/bindings.cpp 
+    src/cpp/strategies_engine.cpp     # <--- ADD THIS
+    src/cpp/pdrrm_engine.cpp          # <--- ADD THIS (for PDRRM leaks)
+    src/cpp/portfolio_optimizer.cpp   # <--- ADD THIS (for KPIBundle leaks)
+)
 
 # --- ADD THESE LINES TO FIX std::bad_cast ---
 # 1. ABI & RTTI Stability
