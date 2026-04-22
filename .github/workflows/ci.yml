@@ -72,13 +72,26 @@ jobs:
       # Catches ABI or linker problems before they propagate to downstream jobs.
       - name: Verify import
         run: |
-          python - <<'EOF'
-          import sys, glob, pathlib
+          # Use the specific pythonLocation provided by setup-python
+          ${{ env.pythonLocation }}/bin/python - <<'EOF'
+          import sys, glob, pathlib, os
+          
+          # Find the .so
           sos = glob.glob("build/alpha_cpp*.so")
           assert sos, "alpha_cpp .so not found in build/"
-          sys.path.insert(0, str(pathlib.Path(sos[0]).parent))
-          import alpha_cpp
-          print(f"alpha_cpp OK — doc: {alpha_cpp.__doc__[:60]}")
+          
+          # Ensure we use an absolute path for the import search
+          so_path = pathlib.Path(sos[0]).resolve()
+          sys.path.insert(0, str(so_path.parent))
+          
+          print(f"Attempting to import from: {so_path}")
+          try:
+              import alpha_cpp
+              print(f"alpha_cpp OK — doc: {alpha_cpp.__doc__[:60] if alpha_cpp.__doc__ else 'No doc'}")
+          except ImportError as e:
+              # This captures the std::bad_cast and provides more context
+              print(f"\nFATAL: Import failed with: {e}")
+              sys.exit(1)
           EOF
 
       - uses: actions/upload-artifact@v4
