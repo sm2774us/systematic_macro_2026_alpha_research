@@ -47,8 +47,7 @@ namespace alpha::pdrrm
     // Add __attribute__((visibility("default"))) to ensure RTTI is exported
     struct __attribute__((visibility("default"))) PDRRMConfig
     {
-        // ── ADD THIS LINE ────────────────────────────────────────────────────────
-        virtual ~PDRRMConfig();
+        virtual ~PDRRMConfig(); // Strong anchor in pdrrm_engine.cpp
 
         // ── RRDM parameters ─────────────────────────────────────────────────────
         int rrdm_momentum_window{20}; ///< Momentum look-back in trading days (~4 weeks)
@@ -88,9 +87,6 @@ namespace alpha::pdrrm
     public:
         static constexpr int kMaxCurrencies = 9; ///< G10 universe size
 
-        // ── ADD THIS LINE ────────────────────────────────────────────────────────
-        virtual ~PDRRMEngine();
-
         /**
          * @brief Construct a PDRRM engine with given configuration.
          * @param cfg Engine hyperparameters.
@@ -98,6 +94,8 @@ namespace alpha::pdrrm
         explicit PDRRMEngine(PDRRMConfig cfg = {}) noexcept
             : cfg_{std::move(cfg)},
               weights_{VectorXd::Ones(3) / 3.0} {} // Equal-weight prior
+
+        virtual ~PDRRMEngine();
 
         // ── Batch signal computation ──────────────────────────────────────────────
 
