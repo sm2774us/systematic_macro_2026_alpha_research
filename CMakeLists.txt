@@ -131,6 +131,10 @@ target_include_directories(alpha_cpp_lib
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/alpha_research>
 )
 target_link_libraries(alpha_cpp_lib INTERFACE Eigen3::Eigen)
+target_compile_features(alpha_cpp_lib INTERFACE cxx_std_23)
+target_compile_options(alpha_cpp_lib INTERFACE
+  $<$<CONFIG:Release>:-O3;-march=native;-mavx2;-mfma;-ffast-math>
+)
 
 # --- CHANGE 2: Add RTTI and Visibility flags for stability ---
 target_compile_options(alpha_cpp_lib PRIVATE -frtti)
