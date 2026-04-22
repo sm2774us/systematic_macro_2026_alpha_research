@@ -124,7 +124,12 @@ add_library(alpha_cpp_lib STATIC
 # Ensure the library is compiled with -fPIC so it can be linked into the nanobind .so
 set_target_properties(alpha_cpp_lib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(alpha_cpp_lib INTERFACE src/cpp)
+# --- FIX: Use BUILD_INTERFACE to resolve the export path error ---
+target_include_directories(alpha_cpp_lib 
+    PUBLIC 
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/cpp>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/alpha_research>
+)
 target_link_libraries(alpha_cpp_lib INTERFACE Eigen3::Eigen)
 
 # --- CHANGE 2: Add RTTI and Visibility flags for stability ---
