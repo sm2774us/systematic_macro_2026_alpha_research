@@ -11,18 +11,15 @@ on:
 
 env:
   PYTHON_VERSION: "3.13"
-  # ── alpha_cpp artifact name (scoped to workflow run by GHA automatically) ─
+  # Artifact name is scoped to the workflow run by GHA automatically.
   CPP_ARTIFACT: alpha-cpp-so
 
-# ─────────────────────────────────────────────────────────────────────────────
-# BUILD-EXTENSION — compile alpha_cpp nanobind .so ONCE, share via artifact.
-#
-# WHY: Every GHA job runs on a fresh VM; the .so built in cpp-test is lost.
-#      Building here (not in cpp-test) keeps cpp-test independent and avoids
-#      rebuilding the extension N times.  Runs on ALL triggers so the artifact
-#      is always present when downstream jobs (including the cron monitor) need it.
-# ─────────────────────────────────────────────────────────────────────────────
 jobs:
+  # ── BUILD-EXTENSION — compile alpha_cpp nanobind .so ONCE, share via artifact ──
+  #
+  # Every GHA job runs on a fresh VM. Building here and uploading as an artifact
+  # means each Python-running job downloads the same binary rather than rebuilding.
+  # Runs on ALL triggers (no 'if:') so the artifact exists even on cron schedule.
   build-extension:
     name: "Build alpha_cpp nanobind extension"
     runs-on: ubuntu-24.04
@@ -42,8 +39,6 @@ jobs:
       - name: Install nanobind
         run: pip install nanobind
 
-      # Cache the CMake build directory so incremental builds are fast (~20s
-      # after the first cold build of ~90s on ubuntu-24.04).
       - name: Cache CMake build
         uses: actions/cache@v4
         with:
@@ -51,19 +46,30 @@ jobs:
           key: cmake-ext-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'src/cpp/bindings.cpp', 'src/cpp/*.hpp') }}
           restore-keys: cmake-ext-${{ runner.os }}-
 
-      - name: CMake configure (alpha_cpp target only)
+      # ── KEY FIX: pin CMake to the exact Python that actions/setup-python installed ──
+      # Without this, CMake find_package(Python) may find the system Python
+      # (e.g. /usr/bin/python3.12 on ubuntu-24.04) while actions/setup-python
+      # put Python 3.13 at /opt/hostedtoolcache/...  The compiled .so then carries
+      # the wrong ABI tag and importing it with Python 3.13 raises:
+      #   ImportError: std::bad_cast   (nanobind Python C-API struct mismatch)
+      # Passing -DPython_EXECUTABLE and -DPython3_EXECUTABLE overrides both
+      # the CMake cache (stale from a partial restore-keys hit) and system search.
+      - name: CMake configure — alpha_cpp target only
         run: |
+          PY_EXE="$(python -c 'import sys; print(sys.executable)')"
           cmake -B build -S . \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_COMPILER=g++-14 \
             -DCMAKE_C_COMPILER=gcc-14 \
+            -DPython_EXECUTABLE="${PY_EXE}" \
+            -DPython3_EXECUTABLE="${PY_EXE}" \
             -G Ninja
 
-      # Build ONLY the nanobind extension — tests live in cpp-test.
-      - name: CMake build (alpha_cpp)
+      - name: CMake build — alpha_cpp only
         run: cmake --build build --target alpha_cpp --parallel
 
-      # Smoke-test: the .so must actually be importable before we upload it.
+      # Smoke-test: the .so must be importable by the SAME interpreter before upload.
+      # Catches ABI or linker problems before they propagate to downstream jobs.
       - name: Verify import
         run: |
           python - <<'EOF'
@@ -75,24 +81,20 @@ jobs:
           print(f"alpha_cpp OK — doc: {alpha_cpp.__doc__[:60]}")
           EOF
 
-      # Upload the .so so every downstream job can download it without
-      # rebuilding.  Artifacts are automatically scoped to this workflow run.
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.CPP_ARTIFACT }}
-          # Glob matches the ABI-tagged name produced by CMake:
+          # Glob matches the ABI-tagged name CMake produces, e.g.:
           #   alpha_cpp.cpython-313-x86_64-linux-gnu.so
           path: build/alpha_cpp*.so
-          retention-days: 1   # ephemeral — only needed within one CI run
+          retention-days: 1
 
   # ── Python 3.13 lint + pytest ─────────────────────────────────────────────
   python-test:
     name: "Python 3.13 — lint & pytest"
     runs-on: ubuntu-24.04
-    # Needs the .so so pytest exercises the C++ hot-path, not the fallback.
     needs: [build-extension]
     env:
-      # build/ is where the artifact is downloaded; Python resolves the ABI name.
       PYTHONPATH: ${{ github.workspace }}/build
     steps:
       - uses: actions/checkout@v4
@@ -105,7 +107,7 @@ jobs:
       - name: Install Python dependencies
         run: pip install -e ".[dev]"
 
-      # Download the pre-built .so into build/ so PYTHONPATH finds it.
+      # Download the pre-built .so into build/ so PYTHONPATH resolves it.
       - uses: actions/download-artifact@v4
         with:
           name: ${{ env.CPP_ARTIFACT }}
@@ -153,12 +155,16 @@ jobs:
           key: cmake-${{ runner.os }}-${{ hashFiles('CMakeLists.txt','src/cpp/**') }}
           restore-keys: cmake-${{ runner.os }}-
 
+      # Same Python pin as build-extension for ABI consistency.
       - name: CMake configure (g++-14, C++23)
         run: |
+          PY_EXE="$(python -c 'import sys; print(sys.executable)')"
           cmake -B build -S . \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_COMPILER=g++-14 \
             -DCMAKE_C_COMPILER=gcc-14 \
+            -DPython_EXECUTABLE="${PY_EXE}" \
+            -DPython3_EXECUTABLE="${PY_EXE}" \
             -G Ninja
 
       - name: CMake build
@@ -185,7 +191,6 @@ jobs:
       - name: Install Python dependencies
         run: pip install -e ".[dev]"
 
-      # The .so must be in build/ before runner.py is invoked.
       - uses: actions/download-artifact@v4
         with:
           name: ${{ env.CPP_ARTIFACT }}
@@ -202,7 +207,7 @@ jobs:
       - name: Bazel version (reads .bazelversion → 7.4.1)
         run: bazel version
 
-      - name: Smoke — backtest via runner.py (same code bazel run //:backtest calls)
+      - name: Smoke — backtest via runner.py
         env:
           N_DAYS: "300"
           N_CURRENCIES: "5"
@@ -213,7 +218,7 @@ jobs:
     name: "Signal Decay Monitor (daily)"
     runs-on: ubuntu-24.04
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    # build-extension has no 'if:' guard so it always runs, even on schedule.
+    # build-extension has no 'if:' guard → it always runs, including on cron.
     needs: [build-extension]
     env:
       PYTHONPATH: ${{ github.workspace }}/build
