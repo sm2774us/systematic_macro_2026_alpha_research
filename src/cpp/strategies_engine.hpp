@@ -39,14 +39,14 @@ namespace alpha::strategies
      */
     struct TPMCRConfig
     {
-        virtual ~TPMCRConfig() = default; // <--- ADD THIS
-        int tpm_window{15};               ///< Term-premium momentum look-back (trading days)
-        double crs_persistence{0.85};     ///< HMM self-transition probability (diagonal prior)
-        double fiscal_threshold{1.5};     ///< Fiscal stress z-score activation threshold
-        double target_vol{0.10};          ///< Annual portfolio vol target
-        double max_pos{0.30};             ///< Max position per instrument
-        double ridge_lambda{0.05};        ///< Ridge regularisation
-        int n_regimes{4};                 ///< Number of HMM curve regimes
+        virtual ~TPMCRConfig();       // <--- ADD THIS
+        int tpm_window{15};           ///< Term-premium momentum look-back (trading days)
+        double crs_persistence{0.85}; ///< HMM self-transition probability (diagonal prior)
+        double fiscal_threshold{1.5}; ///< Fiscal stress z-score activation threshold
+        double target_vol{0.10};      ///< Annual portfolio vol target
+        double max_pos{0.30};         ///< Max position per instrument
+        double ridge_lambda{0.05};    ///< Ridge regularisation
+        int n_regimes{4};             ///< Number of HMM curve regimes
     };
 
     /**
@@ -61,7 +61,7 @@ namespace alpha::strategies
     class TPMCREngine
     {
     public:
-        virtual ~TPMCREngine() = default; // <--- ADD THIS
+        virtual ~TPMCREngine(); // <--- ADD THIS
         /// Input data for one trading day
         struct DayData
         {
@@ -197,10 +197,10 @@ namespace alpha::strategies
      */
     struct MAERMConfig
     {
-        virtual ~MAERMConfig() = default; // <--- ADD THIS
-        int revision_window{21};          ///< EPS revision look-back (trading days)
-        double ism_threshold_bull{52};    ///< ISM PMI bull-regime threshold
-        double ism_threshold_bear{48};    ///< ISM PMI bear-regime threshold
+        virtual ~MAERMConfig();        // <--- ADD THIS
+        int revision_window{21};       ///< EPS revision look-back (trading days)
+        double ism_threshold_bull{52}; ///< ISM PMI bull-regime threshold
+        double ism_threshold_bear{48}; ///< ISM PMI bear-regime threshold
         double target_vol{0.10};
         double max_pos{0.25};
         double ridge_lambda{0.05};
@@ -217,7 +217,7 @@ namespace alpha::strategies
     class MAERMEngine
     {
     public:
-        virtual ~MAERMEngine() = default; // <--- ADD THIS
+        virtual ~MAERMEngine(); // <--- ADD THIS
 
         static constexpr int N_INDICES = 4; ///< ES, NQ, RTY, SX5E
 
@@ -294,10 +294,10 @@ namespace alpha::strategies
      */
     struct ISRCConfig
     {
-        virtual ~ISRCConfig() = default; // <--- ADD THIS
-        int surprise_halflife{5};        ///< EIA surprise EWMA half-life (days)
-        int roll_window{21};             ///< Roll return momentum window
-        double contango_threshold{0};    ///< Roll return sign threshold
+        virtual ~ISRCConfig();        // <--- ADD THIS
+        int surprise_halflife{5};     ///< EIA surprise EWMA half-life (days)
+        int roll_window{21};          ///< Roll return momentum window
+        double contango_threshold{0}; ///< Roll return sign threshold
         double target_vol{0.10};
         double max_pos{0.30};
     };
@@ -316,7 +316,7 @@ namespace alpha::strategies
     class ISRCEngine
     {
     public:
-        virtual ~ISRCEngine() = default; // <--- ADD THIS
+        virtual ~ISRCEngine(); // <--- ADD THIS
 
         static constexpr int N_ENERGY = 3; ///< CL (crude), NG (natgas), RB (gasoline)
 
@@ -395,7 +395,7 @@ namespace alpha::strategies
      */
     struct VSRAConfig
     {
-        virtual ~VSRAConfig() = default;  // <--- ADD THIS
+        virtual ~VSRAConfig();            // <--- ADD THIS
         int vrp_window{21};               ///< VRP rolling window (days)
         double tss_threshold{2.0};        ///< Term structure slope threshold for short VX
         double ska_zscore_threshold{1.5}; ///< Skew anomaly z-score threshold
@@ -416,7 +416,7 @@ namespace alpha::strategies
     class VSRAEngine
     {
     public:
-        virtual ~VSRAEngine() = default; // <--- ADD THIS
+        virtual ~VSRAEngine(); // <--- ADD THIS
 
         struct DayData
         {
@@ -502,7 +502,7 @@ namespace alpha::strategies
      */
     struct FDSPConfig
     {
-        virtual ~FDSPConfig() = default; // <--- ADD THIS
+        virtual ~FDSPConfig();           // <--- ADD THIS
         double fci_shock_threshold{1.5}; ///< FCI z-score to activate signal
         double target_vol{0.10};
         double max_pos{0.20};
@@ -537,7 +537,7 @@ namespace alpha::strategies
     class FDSPEngine
     {
     public:
-        virtual ~FDSPEngine() = default;              // <--- ADD THIS
+        virtual ~FDSPEngine();                        // <--- ADD THIS
         static constexpr int N_ASSETS = 5;            ///< TLT, UUP, GLD, SPY, VX
         static constexpr std::size_t KERNEL_LEN = 10; ///< Convolution kernel length
 

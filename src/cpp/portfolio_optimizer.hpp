@@ -34,6 +34,8 @@ namespace alpha::portfolio
 
     using namespace alpha::math;
 
+    KPIBundle::~KPIBundle() = default; // This forces a "strong" symbol in one .cpp
+
     // ─────────────────────────────────────────────────────────────────────────────
     // KPI Bundle — all performance metrics computed on the hot path
     // ─────────────────────────────────────────────────────────────────────────────
@@ -45,7 +47,7 @@ namespace alpha::portfolio
      */
     struct KPIBundle
     {
-        virtual ~KPIBundle() = default; // <--- ADD THIS
+        virtual ~KPIBundle(); // <--- ADD THIS
         // ── Return metrics ───────────────────────────────────────────────────────
         double sharpe_ratio{0.0};  ///< Annualised Sharpe (daily PnL series)
         double sortino_ratio{0.0}; ///< Annualised Sortino (downside only)

@@ -34,6 +34,8 @@ namespace alpha::pdrrm
 
     using namespace alpha::math;
 
+    PDRRMConfig::~PDRRMConfig() = default; // This forces a "strong" symbol in one .cpp
+
     // ─────────────────────────────────────────────────────────────────────────────
     // Configuration
     // ─────────────────────────────────────────────────────────────────────────────
@@ -47,7 +49,7 @@ namespace alpha::pdrrm
     struct PDRRMConfig
     {
         // ── ADD THIS LINE ────────────────────────────────────────────────────────
-        virtual ~PDRRMConfig() = default;
+        virtual ~PDRRMConfig();
 
         // ── RRDM parameters ─────────────────────────────────────────────────────
         int rrdm_momentum_window{20}; ///< Momentum look-back in trading days (~4 weeks)

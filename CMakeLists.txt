@@ -71,6 +71,11 @@ target_compile_options(alpha_cpp PRIVATE
 target_compile_definitions(alpha_cpp PRIVATE 
     NB_DOMAIN=alpha_research_production
 )
+
+# Add to your existing target_link_options
+if(UNIX AND NOT APPLE)
+    target_link_options(alpha_cpp PRIVATE "-Wl,--no-as-needed")
+endif()
 # --------------------------------------------
 
 # ── alpha_cpp_lib: header-only interface library ──────────────────────────────
