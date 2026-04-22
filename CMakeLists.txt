@@ -53,6 +53,26 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nanobind)
 nanobind_add_module(alpha_cpp src/cpp/bindings.cpp)
 
+# --- ADD THESE LINES TO FIX std::bad_cast ---
+# 1. ABI & RTTI Stability
+set_target_properties(alpha_cpp PROPERTIES 
+    CXX_VISIBILITY_PRESET default
+    VISIBILITY_INLINES_HIDDEN OFF
+    POSITION_INDEPENDENT_CODE ON  # Force -fPIC
+)
+
+# 2. Compiler Flags for C++26 and RTTI
+target_compile_options(alpha_cpp PRIVATE 
+    -frtti 
+    -fconcepts        # Ensure C++26 concepts are solid
+)
+
+# 3. Registry Stabilization
+target_compile_definitions(alpha_cpp PRIVATE 
+    NB_DOMAIN=alpha_research_production
+)
+# --------------------------------------------
+
 # ── alpha_cpp_lib: header-only interface library ──────────────────────────────
 add_library(alpha_cpp_lib INTERFACE)
 target_include_directories(alpha_cpp_lib INTERFACE
