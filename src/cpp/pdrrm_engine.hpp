@@ -34,8 +34,6 @@ namespace alpha::pdrrm
 
     using namespace alpha::math;
 
-    PDRRMConfig::~PDRRMConfig() = default; // This forces a "strong" symbol in one .cpp
-
     // ─────────────────────────────────────────────────────────────────────────────
     // Configuration
     // ─────────────────────────────────────────────────────────────────────────────
@@ -90,7 +88,7 @@ namespace alpha::pdrrm
         static constexpr int kMaxCurrencies = 9; ///< G10 universe size
 
         // ── ADD THIS LINE ────────────────────────────────────────────────────────
-        virtual ~PDRRMEngine() = default;
+        virtual ~PDRRMEngine();
 
         /**
          * @brief Construct a PDRRM engine with given configuration.

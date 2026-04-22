@@ -34,8 +34,6 @@ namespace alpha::portfolio
 
     using namespace alpha::math;
 
-    KPIBundle::~KPIBundle() = default; // This forces a "strong" symbol in one .cpp
-
     // ─────────────────────────────────────────────────────────────────────────────
     // KPI Bundle — all performance metrics computed on the hot path
     // ─────────────────────────────────────────────────────────────────────────────
@@ -98,7 +96,7 @@ namespace alpha::portfolio
     class SignalDecayMonitor
     {
     public:
-        virtual ~SignalDecayMonitor() = default; // <--- ADD THIS
+        virtual ~SignalDecayMonitor(); // <--- ADD THIS
         explicit SignalDecayMonitor(int window = 60) noexcept
             : window_{window}, ic_tracker_{static_cast<double>(window)} {}
 
@@ -171,7 +169,7 @@ namespace alpha::portfolio
     class BacktestEngine
     {
     public:
-        virtual ~BacktestEngine() = default; // <--- ADD THIS
+        virtual ~BacktestEngine(); // <--- ADD THIS
         /**
          * @brief Run a full backtest from signal and return panels.
          *
