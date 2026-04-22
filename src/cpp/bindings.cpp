@@ -134,10 +134,10 @@ NB_MODULE(alpha_cpp, m)
                  auto r = self.run(np2mat(sig), np2mat(ret), tc, ann);
                  if (!r) throw std::runtime_error(r.error().message);
                  return *r; }, "signals"_a, "returns"_a, "tc_rate"_a = 0.0001, "ann_days"_a = 252.0,
-             nb::rv_policy::move) // Fix: Moves the KPIBundle result into Python
+             nb::rv_policy::move); // Fix: Moves the KPIBundle result into Python
 
-        // SignalDecayMonitor --------------------------------------------------
-        nb::class_<alpha::portfolio::SignalDecayMonitor>(m, "SignalDecayMonitor")
+    // SignalDecayMonitor --------------------------------------------------
+    nb::class_<alpha::portfolio::SignalDecayMonitor>(m, "SignalDecayMonitor")
         .def(nb::init<int>(), "window"_a = 60)
         .def("update", &alpha::portfolio::SignalDecayMonitor::update, "ic"_a)
         .def("half_life", &alpha::portfolio::SignalDecayMonitor::half_life)
