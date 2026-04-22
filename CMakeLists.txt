@@ -65,6 +65,7 @@ set_target_properties(alpha_cpp PROPERTIES
     CXX_VISIBILITY_PRESET default
     VISIBILITY_INLINES_HIDDEN OFF
     POSITION_INDEPENDENT_CODE ON  # Force -fPIC
+    INTERPROCEDURAL_OPTIMIZATION OFF  # <--- ADD THIS: Disable LTO for the bridge
 )
 
 # 2. Compiler Flags for C++26 and RTTI

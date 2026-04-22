@@ -44,7 +44,8 @@ namespace alpha::pdrrm
      * Default values are calibrated for G10 FX futures on CME
      * (6J, 6E, 6B, 6A, 6C, 6S, 6N) over the 2014–2025 training period.
      */
-    struct PDRRMConfig
+    // Add __attribute__((visibility("default"))) to ensure RTTI is exported
+    struct __attribute__((visibility("default"))) PDRRMConfig
     {
         // ── ADD THIS LINE ────────────────────────────────────────────────────────
         virtual ~PDRRMConfig();
@@ -82,7 +83,7 @@ namespace alpha::pdrrm
      *
      * Thread safety: Not thread-safe. Create one instance per thread.
      */
-    class PDRRMEngine
+    class __attribute__((visibility("default"))) PDRRMEngine
     {
     public:
         static constexpr int kMaxCurrencies = 9; ///< G10 universe size

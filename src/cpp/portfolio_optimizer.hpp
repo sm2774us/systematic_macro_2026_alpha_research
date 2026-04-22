@@ -43,7 +43,7 @@ namespace alpha::portfolio
      *
      * Populated by `BacktestEngine::run()` and exposed to Python via nanobind.
      */
-    struct KPIBundle
+    struct __attribute__((visibility("default"))) KPIBundle
     {
         virtual ~KPIBundle(); // <--- ADD THIS
         // ── Return metrics ───────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ namespace alpha::portfolio
      *   - Half-life decay estimate
      *   - Alert flags for Slack/CI notification
      */
-    class SignalDecayMonitor
+    class __attribute__((visibility("default"))) SignalDecayMonitor
     {
     public:
         virtual ~SignalDecayMonitor(); // <--- ADD THIS
@@ -166,7 +166,7 @@ namespace alpha::portfolio
      *
      * Typical daily batch time: < 5ms for 2520 days × 30 instruments.
      */
-    class BacktestEngine
+    class __attribute__((visibility("default"))) BacktestEngine
     {
     public:
         virtual ~BacktestEngine(); // <--- ADD THIS

@@ -103,7 +103,8 @@ NB_MODULE(alpha_cpp, m)
     // PDRRMEngine ---------------------------------------------------------
     nb::class_<alpha::pdrrm::PDRRMEngine>(m, "PDRRMEngine")
         .def(nb::init<alpha::pdrrm::PDRRMConfig>(),
-             "cfg"_a = alpha::pdrrm::PDRRMConfig{},
+             //"cfg"_a = alpha::pdrrm::PDRRMConfig{},
+             "cfg"_a = nb::cast(alpha::pdrrm::PDRRMConfig()),
              nb::rv_policy::move) // Fix: Moves the PDRRMConfig result into Python
         .def("compute_rrdm", [](alpha::pdrrm::PDRRMEngine &self, const NpArray2D &nom, const NpArray2D &be)
              {
@@ -149,7 +150,8 @@ NB_MODULE(alpha_cpp, m)
     // data = [tp_acm_10y, yield_2y, yield_10y, yield_30y, swap_spread_30y, cds_5y_proxy]
     nb::class_<alpha::strategies::TPMCREngine>(m, "TPMCREngine")
         .def(nb::init<alpha::strategies::TPMCRConfig>(),
-             "cfg"_a = alpha::strategies::TPMCRConfig{},
+             //"cfg"_a = alpha::strategies::TPMCRConfig{},
+             "cfg"_a = nb::cast(alpha::strategies::TPMCRConfig()),
              nb::rv_policy::move) // Fix: Moves the TPMCRConfig result into Python
         .def("tick", [](alpha::strategies::TPMCREngine &self, const NpArray1D &data, const NpArray1D &rets)
              {
@@ -175,7 +177,8 @@ NB_MODULE(alpha_cpp, m)
     // data = [iv_atm, rv_21d, vix_spot, vix_3m, put_skew, rv_skew, vx_return]
     nb::class_<alpha::strategies::VSRAEngine>(m, "VSRAEngine")
         .def(nb::init<alpha::strategies::VSRAConfig>(),
-             "cfg"_a = alpha::strategies::VSRAConfig{},
+             //"cfg"_a = alpha::strategies::VSRAConfig{},
+             "cfg"_a = nb::cast(alpha::strategies::VSRAConfig()),
              nb::rv_policy::move) // Fix: Moves the VSRAConfig result into Python
         .def("tick", [](alpha::strategies::VSRAEngine &self, const NpArray1D &data)
              {
@@ -201,7 +204,8 @@ NB_MODULE(alpha_cpp, m)
     // macro = [swap_spread_30y, cds_5y, tbill_spike]
     nb::class_<alpha::strategies::FDSPEngine>(m, "FDSPEngine")
         .def(nb::init<alpha::strategies::FDSPConfig>(),
-             "cfg"_a = alpha::strategies::FDSPConfig{},
+             //"cfg"_a = alpha::strategies::FDSPConfig{},
+             "cfg"_a = nb::cast(alpha::strategies::FDSPConfig()),
              nb::rv_policy::move) // Fix: Moves the FDSPConfig result into Python
         .def("tick", [](alpha::strategies::FDSPEngine &self, const NpArray1D &macro, const NpArray1D &rets)
              {
