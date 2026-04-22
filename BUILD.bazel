@@ -16,6 +16,28 @@ Author: Alpha Research Pod — 2026
 
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
 
+# ── alpha_cpp.so at workspace root — required for `import alpha_cpp` ─────────
+#
+# WHY THIS GENRULE EXISTS
+# ───────────────────────
+# src/python/alpha_research/BUILD.bazel has `imports = ["../../.."]`, which
+# adds the workspace root (runfiles __main__/) to sys.path for every py_binary
+# that depends on //src/python:alpha_research.
+#
+# The nanobind extension produced by //src/cpp:alpha_cpp.so lives at
+#   bazel-bin/src/cpp/alpha_cpp.so  →  runfiles __main__/src/cpp/alpha_cpp.so
+#
+# That path is NOT on sys.path, so `import alpha_cpp` fails.
+# This genrule copies it to bazel-bin/alpha_cpp.so →  runfiles __main__/alpha_cpp.so
+# which IS on sys.path.  Zero code changes to any Python source needed.
+genrule(
+    name = "alpha_cpp_so",
+    srcs = ["//src/cpp:alpha_cpp.so"],
+    outs = ["alpha_cpp.so"],
+    cmd = "cp $< $@",
+    visibility = ["//visibility:public"],
+)
+
 # ── Backtest runner ──────────────────────────────────────────────────────────
 py_binary(
     name = "backtest",

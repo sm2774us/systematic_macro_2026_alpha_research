@@ -5,6 +5,11 @@ load("@rules_python//python:defs.bzl", "py_library")
 py_library(
     name = "alpha_research",
     srcs = glob(["*.py"]),
+    # //:alpha_cpp_so copies the nanobind .so to the workspace root in bazel-bin.
+    # Because imports = ["../../.."] puts the workspace root on sys.path for every
+    # py_binary that depends on this library, `import alpha_cpp` resolves to
+    # __main__/alpha_cpp.so in the runfiles tree without any Python-source changes.
+    data = ["//:alpha_cpp_so"],
     imports = ["../../.."],   # repo root → allows `import alpha_research`
     visibility = ["//visibility:public"],
 )

@@ -39,3 +39,5 @@ results/
 
 # IDE
 .idea/ .vscode/ *.swp
+
+.early.coverage
